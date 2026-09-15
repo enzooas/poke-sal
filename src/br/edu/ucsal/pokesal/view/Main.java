@@ -1,5 +1,12 @@
 package br.edu.ucsal.pokesal.view;
 
-public class Main {
+import br.edu.ucsal.pokesal.model.Pokesal;
+import br.edu.ucsal.pokesal.model.SalDex;
 
+
+public class Main {
+    public static void main(String[] args) {
+        Pokesal charsal = new Pokesal(SalDex.CHARSAL);
+        System.out.println(charsal.getTipoElemental());
+    }
 }

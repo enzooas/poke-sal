@@ -2,40 +2,40 @@ package br.edu.ucsal.pokesal.model;
 
 public class Pokesal {
 
-	private String nome;
-	private String tipoElemental;
+	private final String nome;
+	private final TipoElemental tipoElemental;
+	private final int hpMax;
 	private int hpAtual;
-	private int hpMax;
-	private Ataque atk;
-	private int def;
-	private int spd;
+	private final int atk;
+	private final int def;
+	private final int spd;
 	private String status;
 	
-	public Pokesal(String nome, String tipoElemental, int hpMax, Ataque atk, int def, int spd) {
-        this.nome = nome;
-        this.tipoElemental = tipoElemental;
-        this.hpMax = hpMax;
-        this.hpAtual = hpMax;
-        this.atk = atk;
-        this.def = def;
-        this.spd = spd;
-        this.status = "NORMAL";
+	public Pokesal(SalDex pokesal) {
+        this.nome = pokesal.getNome();
+        this.tipoElemental = pokesal.getTipoElemental();
+        this.hpMax = pokesal.getHpMax();
+        this.hpAtual = this.hpMax;
+        this.atk = pokesal.getAtk();
+        this.def = pokesal.getDef();
+        this.spd = pokesal.getSpd();
+		this.status = "NORMAL";
     }
+
+	public TipoElemental getTipoElemental() {
+		return tipoElemental;
+	}
 
 	public String getNome() {
 		return nome;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public int getHpMax() {
+		return hpMax;
 	}
 
-	public String getTipoElemental() {
-		return tipoElemental;
-	}
-
-	public void setTipoElemental(String tipoElemental) {
-		this.tipoElemental = tipoElemental;
+	public int getAtk() {
+		return atk;
 	}
 
 	public int getHpAtual() {
@@ -46,36 +46,12 @@ public class Pokesal {
 		this.hpAtual = hpAtual;
 	}
 
-	public int getHpMax() {
-		return hpMax;
-	}
-
-	public void setHpMax(int hpMax) {
-		this.hpMax = hpMax;
-	}
-
-	public Ataque getAtk() {
-		return atk;
-	}
-
-	public void setAtk(Ataque atk) {
-		this.atk = atk;
-	}
-
 	public int getDef() {
 		return def;
 	}
 
-	public void setDef(int def) {
-		this.def = def;
-	}
-
 	public int getSpd() {
 		return spd;
-	}
-
-	public void setSpd(int spd) {
-		this.spd = spd;
 	}
 
 	public String getStatus() {
@@ -85,5 +61,4 @@ public class Pokesal {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	
 }
