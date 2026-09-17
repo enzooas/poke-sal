@@ -1,6 +1,6 @@
 package br.edu.ucsal.pokesal.model;
 
-import br.edu.ucsal.pokesal.model.Itens;
+import br.edu.ucsal.pokesal.model.enums.*;
 
 public class Pokesal {
 
@@ -11,17 +11,17 @@ public class Pokesal {
 	private final int atk;
 	private final int def;
 	private final int spd;
-	private String status;
+	private Status status;
 	
-	public Pokesal(SalDex pokesal) {
-        this.nomePK = pokesal.getNome();
-        this.tipoElemental = pokesal.getTipoElemental();
-        this.hpMax = pokesal.getHpMax();
+	public Pokesal(SalDex saldex) {
+        this.nomePK = saldex.getNome();
+        this.tipoElemental = saldex.getTipoElemental();
+        this.hpMax = saldex.getHpMax();
         this.hpAtual = this.hpMax;
-        this.atk = pokesal.getAtk();
-        this.def = pokesal.getDef();
-        this.spd = pokesal.getSpd();
-		this.status = "NORMAL";
+        this.atk = saldex.getAtk();
+        this.def = saldex.getDef();
+        this.spd = saldex.getSpd();
+		this.status = Status.NORMAL;
     }
 
 	public TipoElemental getTipoElemental() {
@@ -56,22 +56,22 @@ public class Pokesal {
 		return spd;
 	}
 
-	public String getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(Status status) {
 		this.status = status;
 	}
 
 	public int curar(int valorCura) {
-		int hpAntes = getHpAtual();
-		if (getHpAtual() + valorCura > getHpMax()) {
-			setHpAtual(getHpMax());
+		int hpAntes = hpAtual;
+		if (hpAtual + valorCura > hpMax) {
+			hpAtual = hpMax;
 		} else {
-			setHpAtual(getHpAtual()+valorCura);
+			hpAtual += valorCura;
 		}
-		return getHpAtual() - hpAntes;
+		return hpAtual - hpAntes;
 	}
 
 }

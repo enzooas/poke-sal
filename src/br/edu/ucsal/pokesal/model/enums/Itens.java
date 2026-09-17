@@ -1,15 +1,15 @@
-package br.edu.ucsal.pokesal.model;
+package br.edu.ucsal.pokesal.model.enums;
 
 public enum Itens {
-    POTION("Potion", "NENHUM", 20),
-    SUPERPOTIO("SuperPotion", "NENHUM", 40),
-    ANTIDOTO("Antidoto", "NORMAL", 0);
+    POTION("Potion", TipoEfeito.NENHUM, 20),
+    SUPERPOTION("SuperPotion", TipoEfeito.NENHUM, 50),
+    ANTIDOTE("Antidote", TipoEfeito.NORMAL, 0);
 
     private final String nome;
-    private final String tipoEfeito;
+    private final TipoEfeito tipoEfeito;
     private final int valorCura;
 
-    Itens(String nome, String tipoEfeito, int valorCura){
+    Itens(String nome, TipoEfeito tipoEfeito, int valorCura) {
         this.nome = nome;
         this.tipoEfeito = tipoEfeito;
         this.valorCura = valorCura;
@@ -19,7 +19,7 @@ public enum Itens {
         return nome;
     }
 
-    public String getTipoEfeito() {
+    public TipoEfeito getTipoEfeito() {
         return tipoEfeito;
     }
 

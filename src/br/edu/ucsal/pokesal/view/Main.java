@@ -1,7 +1,7 @@
 package br.edu.ucsal.pokesal.view;
 
 import br.edu.ucsal.pokesal.model.Pokesal;
-import br.edu.ucsal.pokesal.model.SalDex;
+import br.edu.ucsal.pokesal.model.enums.SalDex;
 
 
 public class Main {
