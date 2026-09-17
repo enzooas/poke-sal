@@ -2,38 +2,20 @@ package br.edu.ucsal.pokesal.model;
 
 public class Ataque {
 
-	private String nome;
-	private String tipo;
-	private int danoBase;
+	private final TipoElemental tipoElemental;
+	private final int danoBase;
 	
-	public Ataque(String nome, String tipo, int danoBase) {
-		this.nome = nome;
-		this.tipo = tipo;
+	public Ataque(TipoElemental tipoElemental, int danoBase) {
+		this.tipoElemental = tipoElemental;
 		this.danoBase = danoBase;
 	}
 
-	public String getNome() {
-		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
-	public String getTipo() {
-		return tipo;
-	}
-
-	public void setTipo(String tipo) {
-		this.tipo = tipo;
+	public TipoElemental getTipoElemental() {
+		return tipoElemental;
 	}
 
 	public int getDanoBase() {
 		return danoBase;
 	}
 
-	public void setDanoBase(int danoBase) {
-		this.danoBase = danoBase;
-	}
-	
 }

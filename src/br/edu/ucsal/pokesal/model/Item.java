@@ -35,6 +35,5 @@ public class Item {
 	public void setValorCura(int valorCura) {
 		this.valorCura = valorCura;
 	}
-	
 
 }
