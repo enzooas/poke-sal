@@ -74,4 +74,18 @@ public class Pokesal {
 		return hpAtual - hpAntes;
 	}
 
+	public int receberDano(int dano) {
+		int hpAntes = hpAtual;
+		if (hpAtual - dano < 0) {
+			hpAtual = 0;
+		} else {
+			hpAtual -= dano;
+		}
+		return hpAntes - hpAtual;
+	}
+
+	public boolean estaDerrotado() {
+		return hpAtual == 0;
+	}
+
 }
