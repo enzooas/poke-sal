@@ -1,8 +1,8 @@
 package br.edu.ucsal.pokesal.model.enums;
 
 public enum Terreno {
-    ASFALTO_QUENTE_DIA(TipoElemental.FOGO, 0.15),
-    POCA_DE_CHUVA(TipoElemental.AGUA, 0.1),
+    ASFALTO_QUENTE(TipoElemental.FOGO, 0.15),
+    POCA_CHUVA(TipoElemental.AGUA, 0.1),
     CANTEIRO_CENTRAL(TipoElemental.PLANTA, 0.05);
 
     private final TipoElemental tipoElemental;
