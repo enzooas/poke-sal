@@ -1,24 +1,25 @@
 package br.edu.ucsal.pokesal.model.enums;
 
+/** Condições de status que um PokéSal pode sofrer durante a batalha. */
 public enum Status {
-    NORMAL(0.0, 0.0),
-    QUEIMADO(0.0625, 0.5),    
-    ENVENENADO(0.125, 0.0),   
-    PARALISADO(0.0, 0.5);     
+  NORMAL(0.0, 0.0),
+  QUEIMADO(0.0625, 0.5),
+  ENVENENADO(0.125, 0.0),
+  PARALISADO(0.0, 0.5);
 
-    private final double danoPorTurno;
-    private final double redutorAtributo;
+  private final double danoPorTurno;
+  private final double redutorAtributo;
 
-    Status(double danoPorTurno, double redutorAtributo) {
-        this.danoPorTurno = danoPorTurno;
-        this.redutorAtributo = redutorAtributo;
-    }
+  Status(double danoPorTurno, double redutorAtributo) {
+    this.danoPorTurno = danoPorTurno;
+    this.redutorAtributo = redutorAtributo;
+  }
 
-    public double getDanoPorTurno() {
-        return danoPorTurno;
-    }
+  public double getDanoPorTurno() {
+    return danoPorTurno;
+  }
 
-    public double getRedutorAtributo() {
-        return redutorAtributo;
-    }
+  public double getRedutorAtributo() {
+    return redutorAtributo;
+  }
 }
