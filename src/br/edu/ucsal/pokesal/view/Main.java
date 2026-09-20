@@ -67,7 +67,7 @@ public class Main {
 			
 			Itens recompensa = sortearItemRecompensa(random);
 			jogador.getMochila().getItens().add(recompensa);
-			System.out.println("🎁 Recompensa obtida: " + recompensa.getNome() + " adicionado à mochila!");
+			System.out.println("Recompensa obtida: " + recompensa.getNome() + " adicionado à mochila!");
 		} else {
 			derrotas++;
 			System.out.println("\nA CPU venceu a batalha!");

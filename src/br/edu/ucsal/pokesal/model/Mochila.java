@@ -37,6 +37,10 @@ public class Mochila {
         itens.remove(item);
         qtdUsadaBatalha++;
     }
+    
+    public void resetarUsoBatalha() {
+        this.qtdUsadaBatalha = 0;
+    }
 
     public int getQtdUsadaBatalha() {
         return qtdUsadaBatalha;

@@ -8,6 +8,8 @@ import br.edu.ucsal.pokesal.model.Pokesal;
 import br.edu.ucsal.pokesal.model.Treinador;
 import br.edu.ucsal.pokesal.model.enums.Itens;
 import br.edu.ucsal.pokesal.model.enums.Status;
+import br.edu.ucsal.pokesal.model.enums.Terreno;
+import br.edu.ucsal.pokesal.model.enums.TipoElemental;
 
 public class BatalhaService {
 
@@ -21,6 +23,7 @@ public class BatalhaService {
 	private final Pokesal pokesalCpu;
 	private final Random random;
 	private final Scanner scanner;
+	private Terreno terrenoAtual;
 
 	public BatalhaService(Treinador treinadorJogador, Treinador treinadorCpu, Random random, Scanner scanner) {
 		this.treinadorJogador = treinadorJogador;
@@ -29,19 +32,52 @@ public class BatalhaService {
 		this.pokesalCpu = treinadorCpu.criarPokesal();
 		this.random = random;
 		this.scanner = scanner;
+		Terreno[] terrenos = Terreno.values();
+	    this.terrenoAtual = terrenos[random.nextInt(terrenos.length)];
 	}
 
 	public int calcularDano(Pokesal atacante, Pokesal defensor, boolean critico) {
-		double dano = atacante.getAtk() - (defensor.getDef());
+		double danoBase = atacante.getAtk() - (defensor.getDef());
 
+		if (danoBase < 1) {
+			danoBase = 1;
+		}
+		
+		double danoCalculado = danoBase;
+		
+		double multiElemental = 1.0;
+		
+		if (atacante.getTipoElemental() == TipoElemental.FOGO && defensor.getTipoElemental() == TipoElemental.PLANTA) {
+			multiElemental = 2.0;
+		} else if (atacante.getTipoElemental() == TipoElemental.FOGO && defensor.getTipoElemental() == TipoElemental.AGUA) {
+			multiElemental = 0.5;
+		} else if (atacante.getTipoElemental() == TipoElemental.AGUA && defensor.getTipoElemental() == TipoElemental.FOGO) {
+			multiElemental = 2.0;
+		} else if (atacante.getTipoElemental() == TipoElemental.AGUA && defensor.getTipoElemental() == TipoElemental.PLANTA) {
+			multiElemental = 0.5;
+		} else if (atacante.getTipoElemental() == TipoElemental.PLANTA && defensor.getTipoElemental() == TipoElemental.AGUA) {
+			multiElemental = 2.0;
+		} else if (atacante.getTipoElemental() == TipoElemental.PLANTA && defensor.getTipoElemental() == TipoElemental.FOGO) {
+			multiElemental = 0.5;
+		}
+		danoCalculado *= multiElemental;
+		
+		if (terrenoAtual != null && atacante.getTipoElemental() != TipoElemental.PLANTA) {
+		    if (terrenoAtual.getTipoElemental() == atacante.getTipoElemental()) {
+		        danoCalculado *= (1.0 + terrenoAtual.getPorcentagem());
+		    }
+		}
+		
 		if (critico) {
-			dano *= MULTIPLICADOR_CRITICO;
+			danoCalculado *= MULTIPLICADOR_CRITICO;
 		}
 
-		int danoFinal = (int) dano;
+		int danoFinal = (int) danoCalculado;
+		
 		if (danoFinal < 1) {
-			danoFinal = 1;
+		    danoFinal = 1;
 		}
+		
 		return danoFinal;
 	}
 
@@ -61,34 +97,53 @@ public class BatalhaService {
 		System.out.println(nomeComDono(atacante) + " atacou e causou " + danoSofrido + " de dano em "
 				+ nomeComDono(defensor) + ". HP: " + defensor.getHpAtual() + "/" + defensor.getHpMax());
 
+		if (!defensor.estaDerrotado() && defensor.getStatus() == Status.NORMAL && random.nextDouble() < 0.15) {
+			if (atacante.getTipoElemental() == TipoElemental.FOGO) {
+				defensor.setStatus(Status.QUEIMADO);
+				System.out.println(nomeComDono(defensor) + " foi queimado!");
+			} else if (atacante.getTipoElemental() == TipoElemental.PLANTA) {
+				defensor.setStatus(Status.ENVENENADO);
+				System.out.println(nomeComDono(defensor) + " foi envenenado!");
+			} else if (atacante.getTipoElemental() == TipoElemental.AGUA) {
+				defensor.setStatus(Status.PARALISADO);
+				System.out.println(nomeComDono(defensor) + " foi paralisado!");
+			}
+		}
+		
 		if (defensor.estaDerrotado()) {
 			System.out.println(nomeComDono(defensor) + " foi derrotado!");
 		}
 	}
 
 	public void executarTurnoJogador() {
-		System.out.println("\n--- Seu Turno ---");
-		System.out.println("1 - Atacar");
-		System.out.println("2 - Usar Item");
+	    boolean acaoConcluida = false;
 
-		int acao = lerOpcao(1, 2);
+	    while (!acaoConcluida) {
+	        System.out.println("\n--- Seu Turno ---");
+	        System.out.println("1 - Atacar");
+	        System.out.println("2 - Usar Item");
 
-		if (acao == 1) {
-			System.out.println(nomeComDono(pokesalJogador) + " escolheu atacar!");
-			atacar(pokesalJogador, pokesalCpu);
-		} else if (!treinadorJogador.getMochila().podeUsarItem()) {
-			System.out.println("Mochila vazia ou limite de 2 itens por batalha atingido!"
-					+ "Você perdeu a chance e atacou mesmo assim.");
-			atacar(pokesalJogador, pokesalCpu);
-			return;
-		}
+	        int acao = lerOpcao(1, 2);
 
-		Itens itemEscolhido = escolherItemNaMochila();
-		if (itemEscolhido != null) {
-			aplicarItem(treinadorJogador, pokesalJogador, itemEscolhido);
-		} else {
-			atacar(pokesalJogador, pokesalCpu);
-		}
+	        if (acao == 1) {
+	            System.out.println(nomeComDono(pokesalJogador) + " escolheu atacar!");
+	            atacar(pokesalJogador, pokesalCpu);
+	            acaoConcluida = true; 
+	        } else {
+	            if (!treinadorJogador.getMochila().podeUsarItem()) {
+	                System.out.println("Limite de 2 itens por batalha atingido ou mochila vazia! Escolha outra ação.");
+	                continue; 
+	            }
+
+	            Itens itemEscolhido = escolherItemNaMochila();
+	            if (itemEscolhido != null) {
+	                aplicarItem(treinadorJogador, pokesalJogador, itemEscolhido);
+	                acaoConcluida = true; 
+	            } else {
+	                System.out.println("Retornando ao menu do turno...");
+	            }
+	        }
+	    }
 	}
 
 	public void executarTurnoCpu() {
@@ -133,9 +188,44 @@ public class BatalhaService {
 			System.out.println(pokesal.getNomePK() + " foi curado do envenenamento!");
 		}
 	}
+	
+	private void processarFimDeTurno(Pokesal pokesal) {
+	    if (pokesal.estaDerrotado()) return;
+
+	    if (terrenoAtual != null && pokesal.getTipoElemental() == TipoElemental.PLANTA 
+	        && terrenoAtual == Terreno.CANTEIRO_CENTRAL) {
+	        
+	        int curaTerreno = (int) (pokesal.getHpMax() * terrenoAtual.getPorcentagem());
+	        int curado = pokesal.curar(curaTerreno);
+	        if (curado > 0) {
+	            System.out.println(nomeComDono(pokesal) + " recuperou " + curado + " de HP pelo Canteiro Central!");
+	        }
+	    }
+
+	    Status statusAtual = pokesal.getStatus();
+	    if (statusAtual.getDanoPorTurno() > 0.0) {
+	        
+	        int danoStatus = (int) (pokesal.getHpMax() * statusAtual.getDanoPorTurno());
+	        
+	        if (danoStatus < 1) {
+	            danoStatus = 1;
+	        }
+
+	        pokesal.receberDano(danoStatus);
+	        System.out.println(nomeComDono(pokesal) + " sofreu " + danoStatus + " de dano devido ao status " + statusAtual + "!");
+	    }
+	}
 
 	public Treinador iniciarBatalha() {
+		treinadorJogador.getMochila().resetarUsoBatalha();
+	    treinadorCpu.getMochila().resetarUsoBatalha();
+		
 		System.out.println("\n" + nomeComDono(pokesalJogador) + " contra " + nomeComDono(pokesalCpu) + "!");
+		
+		if (terrenoAtual != null) {
+			System.out.println("Terreno da batalha: " + terrenoAtual);
+		}
+		
 		int rodada = 1;
 
 		while (!pokesalJogador.estaDerrotado() && !pokesalCpu.estaDerrotado()) {
@@ -158,6 +248,16 @@ public class BatalhaService {
 					break;
 				}
 				executarTurnoJogador();
+			}
+			
+			processarFimDeTurno(pokesalJogador);
+			if (pokesalCpu.estaDerrotado() || pokesalJogador.estaDerrotado()) {
+				break;
+			}
+			
+			processarFimDeTurno(pokesalCpu);
+			if (pokesalCpu.estaDerrotado() || pokesalJogador.estaDerrotado()) {
+				break;
 			}
 
 			rodada++;
