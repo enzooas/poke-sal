@@ -13,8 +13,7 @@ import br.edu.ucsal.pokesal.model.enums.TipoElemental;
 
 public class BatalhaService {
 
-	// TODO: valor temporário para teste, voltar para 0.0625 (6,25%)
-	private static final double CHANCE_CRITICO = 0.5;
+	private static final double CHANCE_CRITICO = 0.0625;
 	private static final double MULTIPLICADOR_CRITICO = 1.5;
 
 	private final Treinador treinadorJogador;
@@ -37,8 +36,14 @@ public class BatalhaService {
 	}
 
 	public int calcularDano(Pokesal atacante, Pokesal defensor, boolean critico) {
-		double danoBase = atacante.getAtk() - (defensor.getDef());
+		
+		double atkEfetivo = atacante.getAtk();
 
+		if (atacante.getStatus().getRedutorAtributo() > 0.0 && atacante.getStatus() == Status.QUEIMADO) {
+		    atkEfetivo *= (1.0 - atacante.getStatus().getRedutorAtributo());
+		}
+
+		double danoBase = atkEfetivo - (defensor.getDef());
 		if (danoBase < 1) {
 			danoBase = 1;
 		}
@@ -83,6 +88,16 @@ public class BatalhaService {
 
 	public boolean sortearCritico() {
 		return random.nextDouble() < CHANCE_CRITICO;
+	}
+	
+	private int getSpdEfetiva(Pokesal pokesal) {
+		double spdBase = pokesal.getSpd();
+		
+		if (pokesal.getStatus() == Status.PARALISADO && pokesal.getStatus().getRedutorAtributo() > 0.0) {
+			spdBase *= (1.0 - pokesal.getStatus().getRedutorAtributo());
+		}
+		
+		return (int) spdBase;
 	}
 
 	public void atacar(Pokesal atacante, Pokesal defensor) {
@@ -231,9 +246,12 @@ public class BatalhaService {
 		while (!pokesalJogador.estaDerrotado() && !pokesalCpu.estaDerrotado()) {
 			System.out.println("\n=== Rodada " + rodada + " ===");
 
-			boolean jogadorComeca = pokesalJogador.getSpd() >= pokesalCpu.getSpd();
-			if (pokesalJogador.getSpd() == pokesalCpu.getSpd()) {
-				jogadorComeca = random.nextBoolean();
+			int spdJogador = getSpdEfetiva(pokesalJogador);
+			int spdCpu = getSpdEfetiva(pokesalCpu);
+
+			boolean jogadorComeca = spdJogador >= spdCpu;
+			if (spdJogador == spdCpu) {
+			    jogadorComeca = random.nextBoolean();
 			}
 
 			if (jogadorComeca) {
