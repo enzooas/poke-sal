@@ -2,7 +2,7 @@
 
 ## Ferramenta utilizada
 
-A equipe utilizou a ferramenta ChatGPT como recurso de apoio durante o desenvolvimento do projeto.
+A equipe utilizou a ferramenta de IA como recurso de apoio durante o desenvolvimento do projeto.
 
 ## Finalidade de utilização
 
