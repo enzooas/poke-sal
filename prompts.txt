@@ -1,0 +1,33 @@
+# Histórico de Prompts — Projeto PokeSal
+
+## Prompt 01 — Análise dos requisitos
+
+"Analise os requisitos do trabalho do PokeSal e me ajude a entender o que precisa ser feito em cada fase."
+
+## Prompt 02 — Relatório de inspeção
+
+"Me ajude a organizar os problemas encontrados na inspeção estática dos requisitos em um relatório."
+
+## Prompt 03 — Requisitos autorais
+
+"Me ajude a estruturar os três requisitos autorais do PokeSal."
+
+## Prompt 04 — Escolha do PokeSal
+
+"Como posso criar a escolha do PokéSal? Devo colocar eles numa lista?"
+
+## Prompt 05 — Mochila e terreno
+
+"A mochila e terreno seria melhor enum ou classe?"
+
+## Prompt 06 — Etapas do projeto
+
+"Pode me ajudar a separar o projeto em etapas pra facilitar nossa vida?"
+
+## Prompt 07 — Enum
+
+"O que é enum e pra que serve?"
+
+## Prompt 08 — Utilização de enum
+
+"Como usar o enum?"
