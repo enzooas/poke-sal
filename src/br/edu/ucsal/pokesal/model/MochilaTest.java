@@ -22,9 +22,7 @@ public class MochilaTest {
     mochila.registrarUso(Itens.POTION);
     mochila.registrarUso(Itens.ANTIDOTE);
 
-    assertThrows(IllegalStateException.class, () -> {
-      mochila.registrarUso(Itens.SUPERPOTION);
-    },"O sistema deve lançar um erro impedindo o 3º item na batalha");
+    assertFalse(mochila.podeUsarItem(), "A mochila deve avisar ao BatalhaService que bloqueie o 3º uso.");
   }
 
 }
