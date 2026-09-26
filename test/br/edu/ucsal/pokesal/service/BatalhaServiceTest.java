@@ -1,32 +1,29 @@
 package br.edu.ucsal.pokesal.service;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
 import br.edu.ucsal.pokesal.model.Mochila;
 import br.edu.ucsal.pokesal.model.Pokesal;
 import br.edu.ucsal.pokesal.model.Treinador;
 import br.edu.ucsal.pokesal.model.enums.SalDex;
 import br.edu.ucsal.pokesal.model.enums.Status;
 import br.edu.ucsal.pokesal.model.enums.Terreno;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
 
 public class BatalhaServiceTest {
 
   @Test
   public void testVantagemElemental() {
     Pokesal atacanteFogo = new Pokesal(SalDex.CHARSAL);
-    Pokesal defensorPlanta = new Pokesal(SalDex.BULBASAL);
-    
+    Pokesal defensorPlanta = new Pokesal(SalDex.BULBASAL); 
     Treinador t1 = new Treinador("J1", SalDex.CHARSAL, new Mochila(new ArrayList<>()));
     Treinador t2 = new Treinador("J2", SalDex.BULBASAL, new Mochila(new ArrayList<>()));
-    
     BatalhaService batalha = new BatalhaService(t1, t2, new Random(), new Scanner(System.in));
-    
     int dano = batalha.calcularDano(atacanteFogo, defensorPlanta, false);
     assertTrue(dano >= 6, "Dano deve refletir vantagem elemental de 2.0");
   }
