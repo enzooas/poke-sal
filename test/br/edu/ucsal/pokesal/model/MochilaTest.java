@@ -16,7 +16,6 @@ public class MochilaTest {
     itens.add(Itens.POTION);
     itens.add(Itens.ANTIDOTE);
     itens.add(Itens.SUPERPOTION);
-    
     Mochila mochila = new Mochila(itens);
 
     mochila.registrarUso(Itens.POTION);
