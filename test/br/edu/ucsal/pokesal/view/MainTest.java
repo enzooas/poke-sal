@@ -18,7 +18,7 @@ public class MainTest {
 
     Random randomControlado = new Random() {
       @Override
-      public int nextInt(int bound) {
+      public int nextInt(int valorMaximo) {
         return 1;
       }
     };

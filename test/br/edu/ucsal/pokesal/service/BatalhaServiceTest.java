@@ -32,9 +32,9 @@ public class BatalhaServiceTest {
   public void testEfeitoTerrenoEstacionamentoUCSal() {
     Random randomControlado = new Random() {
       @Override
-      public int nextInt(int bound) {
-        if (bound == Terreno.values().length) return Terreno.ASFALTO_QUENTE.ordinal(); 
-        return super.nextInt(bound);
+      public int nextInt(int valorMaximo) {
+        if (valorMaximo == Terreno.values().length) return Terreno.ASFALTO_QUENTE.ordinal(); 
+        return super.nextInt(valorMaximo);
       }
     };
 
@@ -60,8 +60,7 @@ public class BatalhaServiceTest {
     
     Pokesal rapido = new Pokesal(SalDex.CHARSAL); // Spd 65
     Pokesal lento = new Pokesal(SalDex.BULBASAL); // Spd 45
-    
-    // Voltando a usar o "Pé de Cabra" (Reflection) já que não podemos mexer no 'private' do jogo original!
+
     Method getSpdEfetiva = BatalhaService.class.getDeclaredMethod("getSpdEfetiva", Pokesal.class);
     getSpdEfetiva.setAccessible(true);
     
@@ -85,7 +84,7 @@ public class BatalhaServiceTest {
     
     p.curar(9999);
     assertEquals(p.getHpMax(), p.getHpAtual(), "Cura não deve ultrapassar HP Máximo");
-    
+
     // 2. Boundary do Ataque/Defesa em BatalhaService (Ataque Menor que Defesa)
     Pokesal atacanteFraco = new Pokesal(SalDex.BULBASAL); // ATK 49
     Pokesal defensorForte = new Pokesal(SalDex.SQUIRTSAL); // DEF 65
@@ -107,9 +106,9 @@ public class BatalhaServiceTest {
     
     Random randomNeutro = new Random() {
       @Override
-      public int nextInt(int bound) {
-        if (bound == Terreno.values().length) return Terreno.CANTEIRO_CENTRAL.ordinal(); 
-        return super.nextInt(bound);
+      public int nextInt(int valorMaximo) {
+        if (valorMaximo == Terreno.values().length) return Terreno.CANTEIRO_CENTRAL.ordinal(); 
+        return super.nextInt(valorMaximo);
       }
     };
     
