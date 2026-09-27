@@ -21,7 +21,9 @@ public class MochilaTest {
     mochila.registrarUso(Itens.POTION);
     mochila.registrarUso(Itens.ANTIDOTE);
 
-    assertFalse(mochila.podeUsarItem(), "A mochila deve avisar ao BatalhaService que bloqueie o 3º uso.");
+    assertThrows(IllegalStateException.class, () -> {
+        mochila.registrarUso(Itens.SUPERPOTION);
+    }, "O treinador não deve poder usar mais que 2 itens");
   }
 
 }
