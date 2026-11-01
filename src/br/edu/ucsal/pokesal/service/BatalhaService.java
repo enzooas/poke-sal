@@ -30,7 +30,7 @@ public class BatalhaService {
   private final Pokesal pokesalCpu;
   private final Random random;
   private final Scanner scanner;
-  private Terreno terrenoAtual;
+  private final Terreno terrenoAtual;
 
   /** Cria a batalha, instancia os PokéSal dos dois treinadores e sorteia o terreno. */
   public BatalhaService(
@@ -50,8 +50,7 @@ public class BatalhaService {
 
     double atkEfetivo = atacante.getAtk();
 
-    if (atacante.getStatus().getRedutorAtributo() > 0.0
-        && atacante.getStatus() == Status.QUEIMADO) {
+    if (atacante.getStatus() == Status.QUEIMADO) {
       atkEfetivo *= (1.0 - atacante.getStatus().getRedutorAtributo());
     }
 
@@ -85,7 +84,7 @@ public class BatalhaService {
     }
     danoCalculado *= multiElemental;
 
-    if (terrenoAtual != null && atacante.getTipoElemental() != TipoElemental.PLANTA) {
+    if (atacante.getTipoElemental() != TipoElemental.PLANTA) {
       if (terrenoAtual.getTipoElemental() == atacante.getTipoElemental()) {
         danoCalculado *= (1.0 + terrenoAtual.getPorcentagem());
       }
@@ -112,8 +111,7 @@ public class BatalhaService {
   private int getSpdEfetiva(Pokesal pokesal) {
     double spdBase = pokesal.getSpd();
 
-    if (pokesal.getStatus() == Status.PARALISADO
-        && pokesal.getStatus().getRedutorAtributo() > 0.0) {
+    if (pokesal.getStatus() == Status.PARALISADO) {
       spdBase *= (1.0 - pokesal.getStatus().getRedutorAtributo());
     }
 
@@ -236,7 +234,7 @@ public class BatalhaService {
       return;
     }
 
-    if (terrenoAtual != null && pokesal.getTipoElemental() == TipoElemental.PLANTA
+    if (pokesal.getTipoElemental() == TipoElemental.PLANTA
         && terrenoAtual == Terreno.CANTEIRO_CENTRAL) {
 
       int curaTerreno = (int) (pokesal.getHpMax() * terrenoAtual.getPorcentagem());
@@ -269,10 +267,7 @@ public class BatalhaService {
 
     System.out.println(
         "\n" + nomeComDono(pokesalJogador) + " contra " + nomeComDono(pokesalCpu) + "!");
-
-    if (terrenoAtual != null) {
-      System.out.println("Terreno da batalha: " + terrenoAtual);
-    }
+    System.out.println("Terreno da batalha: " + terrenoAtual);
 
     int rodada = 1;
 
