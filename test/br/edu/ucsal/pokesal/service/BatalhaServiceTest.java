@@ -33,7 +33,9 @@ public class BatalhaServiceTest {
     Random randomControlado = new Random() {
       @Override
       public int nextInt(int valorMaximo) {
-        if (valorMaximo == Terreno.values().length) return Terreno.ASFALTO_QUENTE.ordinal(); 
+        if ((valorMaximo == Terreno.values().length)) {
+          return Terreno.ASFALTO_QUENTE.ordinal(); 
+        }
         return super.nextInt(valorMaximo);
       }
     };
