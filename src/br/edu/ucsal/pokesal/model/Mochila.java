@@ -39,6 +39,10 @@ public class Mochila {
 
   /** Remove o item da mochila e contabiliza mais um uso na batalha. */
   public void registrarUso(Itens item) {
+    if (!podeUsarItem()) {
+      throw new IllegalStateException(
+        "Limite de " + LIMITE_MAXIMO + " itens por batalha atingido ou mochila vazia");
+    }
     itens.remove(item);
     qtdUsadaBatalha++;
   }
