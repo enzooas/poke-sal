@@ -211,21 +211,10 @@ public class BatalhaService {
       return;
     }
 
-    if (pokesal.getTipoElemental() == TipoElemental.PLANTA
-        && terrenoAtual == Terreno.CANTEIRO_CENTRAL) {
-
-      int curaTerreno = (int) (pokesal.getHpMax() * terrenoAtual.getPorcentagem());
-      int curado = pokesal.curar(curaTerreno);
-      if (curado > 0) {
-        System.out.println(
-            nomeComDono(pokesal) + " recuperou " + curado + " de HP pelo Canteiro Central!");
-      }
-    }
-
     Status statusAtual = pokesal.getStatus();
-    if (statusAtual.getDanoPorTurno() > 0.0) {
-
-      int danoStatus = (int) (pokesal.getHpMax() * statusAtual.getDanoPorTurno());
+    if (statusAtual.danoNoTurno(pokesal.getTurnosComStatus()) > 0.0) {
+      int danoStatus = (int) (pokesal.getHpMax()
+          * statusAtual.danoNoTurno(pokesal.getTurnosComStatus()));
 
       if (danoStatus < DANO_MINIMO) {
         danoStatus = DANO_MINIMO;
@@ -234,6 +223,28 @@ public class BatalhaService {
       pokesal.receberDano(danoStatus);
       System.out.println(nomeComDono(pokesal) + " sofreu " + danoStatus
           + " de dano devido ao status " + statusAtual + "!");
+    }
+
+    if (statusAtual != Status.NORMAL) {
+      pokesal.avancarTurnoDeStatus();
+      if (statusAtual.expira() && pokesal.getTurnosComStatus() >= statusAtual.getDuracaoTurnos()) {
+        pokesal.setStatus(Status.NORMAL);
+        System.out.println(nomeComDono(pokesal) + " se recuperou de " + statusAtual + "!");
+      }
+    }
+
+    if (pokesal.estaDerrotado()) {
+      return;
+    }
+
+    if (pokesal.getTipoElemental() == TipoElemental.PLANTA
+        && terrenoAtual == Terreno.CANTEIRO_CENTRAL) {
+      int curaTerreno = (int) (pokesal.getHpMax() * terrenoAtual.getPorcentagem());
+      int curado = pokesal.curar(curaTerreno);
+      if (curado > 0) {
+        System.out.println(
+            nomeComDono(pokesal) + " recuperou " + curado + " de HP pelo Canteiro Central!");
+      }
     }
   }
 

@@ -15,6 +15,7 @@ public class Pokesal {
   private final int def;
   private final int spd;
   private Status status;
+  private int turnosComStatus;
 
   /** Cria o PokéSal a partir da SalDex, com HP cheio e status normal. */
   public Pokesal(SalDex saldex) {
@@ -66,6 +67,16 @@ public class Pokesal {
 
   public void setStatus(Status status) {
     this.status = status;
+    this.turnosComStatus = 0;
+  }
+
+  public int getTurnosComStatus() {
+    return turnosComStatus;
+  }
+
+  /** Conta mais um turno sob o status atual. */
+  public void avancarTurnoDeStatus() {
+    turnosComStatus++;
   }
 
   /** Recupera HP sem ultrapassar o máximo e devolve quanto foi efetivamente curado. */
