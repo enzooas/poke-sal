@@ -2,6 +2,8 @@ package br.edu.ucsal.pokesal.model;
 
 import br.edu.ucsal.pokesal.model.enums.Itens;
 import br.edu.ucsal.pokesal.model.enums.Status;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /** Guarda os itens do treinador e controla o limite de uso por batalha. */
@@ -13,7 +15,7 @@ public class Mochila {
 
   /** Cria a mochila com a lista de itens informada e zera o contador de usos. */
   public Mochila(List<Itens> itens) {
-    this.itens = itens;
+    this.itens = new ArrayList<>(itens);
     this.qtdUsadaBatalha = 0;
   }
 
