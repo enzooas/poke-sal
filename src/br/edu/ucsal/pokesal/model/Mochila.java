@@ -2,7 +2,6 @@ package br.edu.ucsal.pokesal.model;
 
 import br.edu.ucsal.pokesal.model.enums.Itens;
 import br.edu.ucsal.pokesal.model.enums.Status;
-
 import java.util.ArrayList;
 import java.util.List;
 

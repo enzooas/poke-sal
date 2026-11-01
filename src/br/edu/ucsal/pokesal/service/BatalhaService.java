@@ -17,9 +17,6 @@ public class BatalhaService {
   private static final double CHANCE_CRITICO = 0.0625;
   private static final double CHANCE_STATUS = 0.15;
   private static final double MULTIPLICADOR_CRITICO = 1.5;
-  private static final double SUPER_EFETIVO = 2.0;
-  private static final double POUCO_EFETIVO = 0.5;
-  private static final double NEUTRO = 1.0;
   private static final int DANO_MINIMO = 1;
   private static final int ACAO_ATACAR = 1;
   private static final int ACAO_USAR_ITEM = 2;
@@ -61,33 +58,13 @@ public class BatalhaService {
 
     double danoCalculado = danoBase;
 
-    double multiElemental = NEUTRO;
-
-    if (atacante.getTipoElemental() == TipoElemental.FOGO
-        && defensor.getTipoElemental() == TipoElemental.PLANTA) {
-      multiElemental = SUPER_EFETIVO;
-    } else if (atacante.getTipoElemental() == TipoElemental.FOGO
-        && defensor.getTipoElemental() == TipoElemental.AGUA) {
-      multiElemental = POUCO_EFETIVO;
-    } else if (atacante.getTipoElemental() == TipoElemental.AGUA
-        && defensor.getTipoElemental() == TipoElemental.FOGO) {
-      multiElemental = SUPER_EFETIVO;
-    } else if (atacante.getTipoElemental() == TipoElemental.AGUA
-        && defensor.getTipoElemental() == TipoElemental.PLANTA) {
-      multiElemental = POUCO_EFETIVO;
-    } else if (atacante.getTipoElemental() == TipoElemental.PLANTA
-        && defensor.getTipoElemental() == TipoElemental.AGUA) {
-      multiElemental = SUPER_EFETIVO;
-    } else if (atacante.getTipoElemental() == TipoElemental.PLANTA
-        && defensor.getTipoElemental() == TipoElemental.FOGO) {
-      multiElemental = POUCO_EFETIVO;
-    }
+    double multiElemental =
+        atacante.getTipoElemental().multiplicadorContra(defensor.getTipoElemental());
     danoCalculado *= multiElemental;
 
-    if (atacante.getTipoElemental() != TipoElemental.PLANTA) {
-      if (terrenoAtual.getTipoElemental() == atacante.getTipoElemental()) {
-        danoCalculado *= (1.0 + terrenoAtual.getPorcentagem());
-      }
+    if (atacante.getTipoElemental() != TipoElemental.PLANTA
+        && terrenoAtual.getTipoElemental() == atacante.getTipoElemental()) {
+      danoCalculado *= (1.0 + terrenoAtual.getPorcentagem());
     }
 
     if (critico) {
