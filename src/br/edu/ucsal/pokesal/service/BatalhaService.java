@@ -1,5 +1,6 @@
 package br.edu.ucsal.pokesal.service;
 
+import br.edu.ucsal.pokesal.model.Mochila;
 import br.edu.ucsal.pokesal.model.Pokesal;
 import br.edu.ucsal.pokesal.model.Treinador;
 import br.edu.ucsal.pokesal.model.enums.Itens;
@@ -14,7 +15,14 @@ import java.util.Scanner;
 public class BatalhaService {
 
   private static final double CHANCE_CRITICO = 0.0625;
+  private static final double CHANCE_STATUS = 0.15;
   private static final double MULTIPLICADOR_CRITICO = 1.5;
+  private static final double SUPER_EFETIVO = 2.0;
+  private static final double POUCO_EFETIVO = 0.5;
+  private static final double NEUTRO = 1.0;
+  private static final int DANO_MINIMO = 1;
+  private static final int ACAO_ATACAR = 1;
+  private static final int ACAO_USAR_ITEM = 2;
 
   private final Treinador treinadorJogador;
   private final Treinador treinadorCpu;
@@ -48,32 +56,32 @@ public class BatalhaService {
     }
 
     double danoBase = atkEfetivo - (defensor.getDef());
-    if (danoBase < 1) {
-      danoBase = 1;
+    if (danoBase < DANO_MINIMO) {
+      danoBase = DANO_MINIMO;
     }
 
     double danoCalculado = danoBase;
 
-    double multiElemental = 1.0;
+    double multiElemental = NEUTRO;
 
     if (atacante.getTipoElemental() == TipoElemental.FOGO
         && defensor.getTipoElemental() == TipoElemental.PLANTA) {
-      multiElemental = 2.0;
+      multiElemental = SUPER_EFETIVO;
     } else if (atacante.getTipoElemental() == TipoElemental.FOGO
         && defensor.getTipoElemental() == TipoElemental.AGUA) {
-      multiElemental = 0.5;
+      multiElemental = POUCO_EFETIVO;
     } else if (atacante.getTipoElemental() == TipoElemental.AGUA
         && defensor.getTipoElemental() == TipoElemental.FOGO) {
-      multiElemental = 2.0;
+      multiElemental = SUPER_EFETIVO;
     } else if (atacante.getTipoElemental() == TipoElemental.AGUA
         && defensor.getTipoElemental() == TipoElemental.PLANTA) {
-      multiElemental = 0.5;
+      multiElemental = POUCO_EFETIVO;
     } else if (atacante.getTipoElemental() == TipoElemental.PLANTA
         && defensor.getTipoElemental() == TipoElemental.AGUA) {
-      multiElemental = 2.0;
+      multiElemental = SUPER_EFETIVO;
     } else if (atacante.getTipoElemental() == TipoElemental.PLANTA
         && defensor.getTipoElemental() == TipoElemental.FOGO) {
-      multiElemental = 0.5;
+      multiElemental = POUCO_EFETIVO;
     }
     danoCalculado *= multiElemental;
 
@@ -89,8 +97,8 @@ public class BatalhaService {
 
     int danoFinal = (int) danoCalculado;
 
-    if (danoFinal < 1) {
-      danoFinal = 1;
+    if (danoFinal < DANO_MINIMO) {
+      danoFinal = DANO_MINIMO;
     }
 
     return danoFinal;
@@ -126,7 +134,7 @@ public class BatalhaService {
         + nomeComDono(defensor) + ". HP: " + defensor.getHpAtual() + "/" + defensor.getHpMax());
 
     if (!defensor.estaDerrotado() && defensor.getStatus() == Status.NORMAL
-        && random.nextDouble() < 0.15) {
+        && random.nextDouble() < CHANCE_STATUS) {
       if (atacante.getTipoElemental() == TipoElemental.FOGO) {
         defensor.setStatus(Status.QUEIMADO);
         System.out.println(nomeComDono(defensor) + " foi queimado!");
@@ -153,16 +161,17 @@ public class BatalhaService {
       System.out.println("1 - Atacar");
       System.out.println("2 - Usar Item");
 
-      int acao = lerOpcao(1, 2);
+      int acao = lerOpcao(ACAO_ATACAR, ACAO_USAR_ITEM);
 
-      if (acao == 1) {
+      if (acao == ACAO_ATACAR) {
         System.out.println(nomeComDono(pokesalJogador) + " escolheu atacar!");
         atacar(pokesalJogador, pokesalCpu);
         acaoConcluida = true;
       } else {
         if (!treinadorJogador.getMochila().podeUsarItem()) {
           System.out.println(
-              "Limite de 2 itens por batalha atingido ou mochila vazia! Escolha outra ação.");
+              "Limite de " + Mochila.LIMITE_MAXIMO + " itens por batalha atingido ou mochila vazia!"
+                  + "Escolha outra ação.");
           continue;
         }
 
@@ -243,8 +252,8 @@ public class BatalhaService {
 
       int danoStatus = (int) (pokesal.getHpMax() * statusAtual.getDanoPorTurno());
 
-      if (danoStatus < 1) {
-        danoStatus = 1;
+      if (danoStatus < DANO_MINIMO) {
+        danoStatus = DANO_MINIMO;
       }
 
       pokesal.receberDano(danoStatus);

@@ -7,9 +7,9 @@ import java.util.List;
 /** Guarda os itens do treinador e controla o limite de uso por batalha. */
 public class Mochila {
 
+  public static final int LIMITE_MAXIMO = 2;
   private List<Itens> itens;
   private int qtdUsadaBatalha;
-  private static final int LIMITE_MAXIMO = 2;
 
   /** Cria a mochila com a lista de itens informada e zera o contador de usos. */
   public Mochila(List<Itens> itens) {

@@ -13,6 +13,10 @@ import java.util.Scanner;
 /** Ponto de entrada do jogo: exibe o menu principal e acumula o histórico de batalhas. */
 public class Main {
 
+  private static final int OPCAO_BATALHA = 1;
+  private static final int OPCAO_MOCHILA = 2;
+  private static final int OPCAO_HISTORICO = 3;
+  private static final int OPCAO_SAIR = 4;
   private static int totalJogos = 0;
   private static int vitorias = 0;
   private static int derrotas = 0;
@@ -39,19 +43,19 @@ public class Main {
       System.out.println("3 - Histórico de Batalhas");
       System.out.println("4 - Sair");
 
-      opcao = lerNumero(scanner, 1, 4);
+      opcao = lerNumero(scanner, OPCAO_BATALHA, OPCAO_SAIR);
 
       switch (opcao) {
-        case 1:
+        case OPCAO_BATALHA:
           iniciarBatalha(jogador, random, scanner);
           break;
-        case 2:
+        case OPCAO_MOCHILA:
           verMochila(jogador);
           break;
-        case 3:
+        case OPCAO_HISTORICO:
           exibirHistorico();
           break;
-        case 4:
+        case OPCAO_SAIR:
           System.out.println("\n===== RESUMO FINAL DO HISTÓRICO =====");
           exibirHistorico();
           System.out.println("Até a próxima!");
@@ -59,7 +63,7 @@ public class Main {
         default:
           break;
       }
-    } while (opcao != 4);
+    } while (opcao != OPCAO_SAIR);
 
     scanner.close();
   }
