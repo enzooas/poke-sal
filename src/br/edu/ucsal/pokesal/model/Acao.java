@@ -21,6 +21,7 @@ public class Acao {
     return new Acao(item);
   }
 
+  /** Confere se a ação escolhida é um ataque. */
   public boolean ehAtaque() {
     return item == null;
   }
