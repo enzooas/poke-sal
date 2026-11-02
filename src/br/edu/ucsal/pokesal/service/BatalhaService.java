@@ -8,7 +8,6 @@ import br.edu.ucsal.pokesal.model.enums.Status;
 import br.edu.ucsal.pokesal.model.enums.Terreno;
 import br.edu.ucsal.pokesal.model.enums.TipoElemental;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
 /** Conduz uma batalha entre o jogador e a CPU, turno a turno, até que haja um vencedor. */
@@ -24,7 +23,7 @@ public class BatalhaService {
   private final Treinador treinadorCpu;
   private final Pokesal pokesalJogador;
   private final Pokesal pokesalCpu;
-  private final Random random;
+  private final GeradorAleatorio gerador;
   private final Scanner scanner;
   private final CalculadoraDano calculadora;
   private final Iniciativa iniciativa;
@@ -32,23 +31,23 @@ public class BatalhaService {
 
   /** Cria a batalha, instancia os PokéSal dos dois treinadores e sorteia o terreno. */
   public BatalhaService(
-      Treinador treinadorJogador, Treinador treinadorCpu, Random random, Scanner scanner,
+      Treinador treinadorJogador, Treinador treinadorCpu, GeradorAleatorio gerador, Scanner scanner,
       CalculadoraDano calculadora, Iniciativa iniciativa) {
     this.treinadorJogador = treinadorJogador;
     this.treinadorCpu = treinadorCpu;
     this.pokesalJogador = treinadorJogador.criarPokesal();
     this.pokesalCpu = treinadorCpu.criarPokesal();
-    this.random = random;
+    this.gerador = gerador;
     this.scanner = scanner;
     this.calculadora = calculadora;
     this.iniciativa = iniciativa;
     Terreno[] terrenos = Terreno.values();
-    this.terrenoAtual = terrenos[random.nextInt(terrenos.length)];
+    this.terrenoAtual = terrenos[gerador.proximoInteiro(terrenos.length)];
   }
 
   /** Sorteia se o golpe será um acerto crítico. */
   public boolean sortearCritico() {
-    return random.nextDouble() < CHANCE_CRITICO;
+    return gerador.proximoDecimal() < CHANCE_CRITICO;
   }
 
   /** Executa um ataque, aplica o dano e sorteia a condição de status do defensor. */
@@ -65,7 +64,7 @@ public class BatalhaService {
         + nomeComDono(defensor) + ". HP: " + defensor.getHpAtual() + "/" + defensor.getHpMax());
 
     if (!defensor.estaDerrotado() && defensor.getStatus() == Status.NORMAL
-        && random.nextDouble() < CHANCE_STATUS) {
+        && gerador.proximoDecimal() < CHANCE_STATUS) {
       if (atacante.getTipoElemental() == TipoElemental.FOGO) {
         defensor.setStatus(Status.QUEIMADO);
         System.out.println(nomeComDono(defensor) + " foi queimado!");

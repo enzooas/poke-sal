@@ -8,25 +8,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import br.edu.ucsal.pokesal.model.Pokesal;
 import br.edu.ucsal.pokesal.model.enums.SalDex;
 import br.edu.ucsal.pokesal.model.enums.Status;
-import java.util.Random;
 import org.junit.jupiter.api.Test;
 
 /** Testes da ordem de ataque definida pela velocidade. */
 public class IniciativaTest {
 
-  /** Random que sempre devolve o mesmo valor no sorteio de empate. */
-  private static Random sorteioFixo(boolean valor) {
-    return new Random() {
+  /** Gerador que sempre devolve o mesmo inteiro, usado no sorteio de empate. */
+  private static GeradorAleatorio sorteioFixo(int valor) {
+    return new GeradorAleatorio() {
       @Override
-      public boolean nextBoolean() {
+      public int proximoInteiro(int limite) {
         return valor;
+      }
+
+      @Override
+      public double proximoDecimal() {
+        return 0.0;
       }
     };
   }
 
   @Test
   public void testOrdemDeAtaquePorVelocidade() {
-    Iniciativa iniciativa = new Iniciativa(new Random());
+    Iniciativa iniciativa = new Iniciativa(sorteioFixo(0));
     Pokesal rapido = new Pokesal(SalDex.CHARSAL);
     Pokesal lento = new Pokesal(SalDex.BULBASAL);
 
@@ -36,8 +40,8 @@ public class IniciativaTest {
   }
 
   @Test
-  public void testParalisiaReduzVelocidadeEInverteOrdem() {
-    Iniciativa iniciativa = new Iniciativa(new Random());
+  public void testParalisiaReduzVelocidadeeInverteOrdem() {
+    Iniciativa iniciativa = new Iniciativa(sorteioFixo(0));
     Pokesal rapido = new Pokesal(SalDex.CHARSAL);
     Pokesal lento = new Pokesal(SalDex.BULBASAL);
     rapido.setStatus(Status.PARALISADO);
@@ -53,7 +57,7 @@ public class IniciativaTest {
     Pokesal b = new Pokesal(SalDex.CYNDASAL);
 
     assertAll(
-        () -> assertTrue(new Iniciativa(sorteioFixo(true)).primeiroAtacaAntes(a, b)),
-        () -> assertFalse(new Iniciativa(sorteioFixo(false)).primeiroAtacaAntes(a, b)));
+        () -> assertTrue(new Iniciativa(sorteioFixo(0)).primeiroAtacaAntes(a, b)),
+        () -> assertFalse(new Iniciativa(sorteioFixo(1)).primeiroAtacaAntes(a, b)));
   }
 }

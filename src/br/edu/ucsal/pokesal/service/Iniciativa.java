@@ -2,16 +2,15 @@ package br.edu.ucsal.pokesal.service;
 
 import br.edu.ucsal.pokesal.model.Pokesal;
 import br.edu.ucsal.pokesal.model.enums.Status;
-import java.util.Random;
 
 /** Decide a ordem de ataque do turno pela velocidade efetiva dos PokéSal. */
 public class Iniciativa {
 
-  private final Random random;
+  private final GeradorAleatorio gerador;
 
   /** Cria a iniciativa com a fonte de sorteio usada nos empates. */
-  public Iniciativa(Random random) {
-    this.random = random;
+  public Iniciativa(GeradorAleatorio gerador) {
+    this.gerador = gerador;
   }
 
   /** Velocidade considerando a redução causada pelo status. */
@@ -27,8 +26,9 @@ public class Iniciativa {
   public boolean primeiroAtacaAntes(Pokesal primeiro, Pokesal segundo) {
     int spdPrimeiro = velocidadeEfetiva(primeiro);
     int spdSegundo = velocidadeEfetiva(segundo);
+
     if (spdPrimeiro == spdSegundo) {
-      return random.nextBoolean();
+      return gerador.proximoInteiro(2) == 0;
     }
     return spdPrimeiro > spdSegundo;
   }

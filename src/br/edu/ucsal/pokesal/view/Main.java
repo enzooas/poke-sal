@@ -6,6 +6,8 @@ import br.edu.ucsal.pokesal.model.enums.Itens;
 import br.edu.ucsal.pokesal.model.enums.SalDex;
 import br.edu.ucsal.pokesal.service.BatalhaService;
 import br.edu.ucsal.pokesal.service.CalculadoraDano;
+import br.edu.ucsal.pokesal.service.GeradorAleatorio;
+import br.edu.ucsal.pokesal.service.GeradorAleatorioPadrao;
 import br.edu.ucsal.pokesal.service.Iniciativa;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,7 @@ public class Main {
   /** Inicia o jogo, monta o treinador do jogador e mantém o laço do menu principal. */
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
-    Random random = new Random();
+    GeradorAleatorio gerador = new GeradorAleatorioPadrao(new Random());
     int opcao;
 
     System.out.println("--- Bem-vindo ao PokéSal ---");
@@ -49,7 +51,7 @@ public class Main {
 
       switch (opcao) {
         case OPCAO_BATALHA:
-          iniciarBatalha(jogador, random, scanner);
+          iniciarBatalha(jogador, gerador, scanner);
           break;
         case OPCAO_MOCHILA:
           verMochila(jogador);
@@ -70,14 +72,15 @@ public class Main {
     scanner.close();
   }
 
-  private static void iniciarBatalha(Treinador jogador, Random random, Scanner scanner) {
+  private static void iniciarBatalha(
+      Treinador jogador, GeradorAleatorio gerador, Scanner scanner) {
     Treinador cpu =
-        new Treinador("CPU", sortearEscolhaCpu(random), new Mochila(new ArrayList<>()));
+        new Treinador("CPU", sortearEscolhaCpu(gerador), new Mochila(new ArrayList<>()));
 
     CalculadoraDano calculadora = new CalculadoraDano();
-    Iniciativa iniciativa = new Iniciativa(random);
+    Iniciativa iniciativa = new Iniciativa(gerador);
     BatalhaService batalha =
-        new BatalhaService(jogador, cpu, random, scanner, calculadora, iniciativa);
+        new BatalhaService(jogador, cpu, gerador, scanner, calculadora, iniciativa);
     Treinador vencedor = batalha.iniciarBatalha();
 
     totalJogos++;
@@ -85,7 +88,7 @@ public class Main {
       vitorias++;
       System.out.println("\nVocê venceu a batalha!");
 
-      Itens recompensa = sortearItemRecompensa(random);
+      Itens recompensa = sortearItemRecompensa(gerador);
       jogador.getMochila().getItens().add(recompensa);
       System.out.println(
           "Recompensa obtida: " + recompensa.getNome() + " adicionado à mochila!");
@@ -120,14 +123,14 @@ public class Main {
     }
   }
 
-  private static Itens sortearItemRecompensa(Random random) {
+  private static Itens sortearItemRecompensa(GeradorAleatorio gerador) {
     Itens[] todosItens = Itens.values();
-    return todosItens[random.nextInt(todosItens.length)];
+    return todosItens[gerador.proximoInteiro(todosItens.length)];
   }
 
-  private static SalDex sortearEscolhaCpu(Random random) {
+  private static SalDex sortearEscolhaCpu(GeradorAleatorio gerador) {
     SalDex[] opcoes = SalDex.values();
-    int indice = random.nextInt(opcoes.length);
+    int indice = gerador.proximoInteiro(opcoes.length);
     return opcoes[indice];
   }
 
