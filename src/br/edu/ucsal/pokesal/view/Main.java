@@ -5,6 +5,8 @@ import br.edu.ucsal.pokesal.model.Treinador;
 import br.edu.ucsal.pokesal.model.enums.Itens;
 import br.edu.ucsal.pokesal.model.enums.SalDex;
 import br.edu.ucsal.pokesal.service.BatalhaService;
+import br.edu.ucsal.pokesal.service.CalculadoraDano;
+import br.edu.ucsal.pokesal.service.Iniciativa;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -72,7 +74,10 @@ public class Main {
     Treinador cpu =
         new Treinador("CPU", sortearEscolhaCpu(random), new Mochila(new ArrayList<>()));
 
-    BatalhaService batalha = new BatalhaService(jogador, cpu, random, scanner);
+    CalculadoraDano calculadora = new CalculadoraDano();
+    Iniciativa iniciativa = new Iniciativa(random);
+    BatalhaService batalha =
+        new BatalhaService(jogador, cpu, random, scanner, calculadora, iniciativa);
     Treinador vencedor = batalha.iniciarBatalha();
 
     totalJogos++;

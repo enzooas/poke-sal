@@ -16,7 +16,6 @@ public class BatalhaService {
 
   private static final double CHANCE_CRITICO = 0.0625;
   private static final double CHANCE_STATUS = 0.15;
-  private static final double MULTIPLICADOR_CRITICO = 1.5;
   private static final int DANO_MINIMO = 1;
   private static final int ACAO_ATACAR = 1;
   private static final int ACAO_USAR_ITEM = 2;
@@ -27,69 +26,29 @@ public class BatalhaService {
   private final Pokesal pokesalCpu;
   private final Random random;
   private final Scanner scanner;
+  private final CalculadoraDano calculadora;
+  private final Iniciativa iniciativa;
   private final Terreno terrenoAtual;
 
   /** Cria a batalha, instancia os PokéSal dos dois treinadores e sorteia o terreno. */
   public BatalhaService(
-      Treinador treinadorJogador, Treinador treinadorCpu, Random random, Scanner scanner) {
+      Treinador treinadorJogador, Treinador treinadorCpu, Random random, Scanner scanner,
+      CalculadoraDano calculadora, Iniciativa iniciativa) {
     this.treinadorJogador = treinadorJogador;
     this.treinadorCpu = treinadorCpu;
     this.pokesalJogador = treinadorJogador.criarPokesal();
     this.pokesalCpu = treinadorCpu.criarPokesal();
     this.random = random;
     this.scanner = scanner;
+    this.calculadora = calculadora;
+    this.iniciativa = iniciativa;
     Terreno[] terrenos = Terreno.values();
     this.terrenoAtual = terrenos[random.nextInt(terrenos.length)];
-  }
-
-  /** Calcula o dano final somando status, vantagem elemental, terreno e acerto crítico. */
-  public int calcularDano(Pokesal atacante, Pokesal defensor, boolean critico) {
-
-    double atkEfetivo = atacante.getAtk();
-
-    if (atacante.getStatus() == Status.QUEIMADO) {
-      atkEfetivo *= (1.0 - atacante.getStatus().getRedutorAtributo());
-    }
-
-    double danoBase = atkEfetivo - (defensor.getDef());
-    if (danoBase < DANO_MINIMO) {
-      danoBase = DANO_MINIMO;
-    }
-
-    double danoCalculado = danoBase;
-
-    double multiElemental =
-        atacante.getTipoElemental().multiplicadorContra(defensor.getTipoElemental());
-    danoCalculado *= multiElemental;
-
-    danoCalculado *= 1.0 + terrenoAtual.bonusDeDano(atacante.getTipoElemental());
-
-    if (critico) {
-      danoCalculado *= MULTIPLICADOR_CRITICO;
-    }
-
-    int danoFinal = (int) danoCalculado;
-
-    if (danoFinal < DANO_MINIMO) {
-      danoFinal = DANO_MINIMO;
-    }
-
-    return danoFinal;
   }
 
   /** Sorteia se o golpe será um acerto crítico. */
   public boolean sortearCritico() {
     return random.nextDouble() < CHANCE_CRITICO;
-  }
-
-  private int getSpdEfetiva(Pokesal pokesal) {
-    double spdBase = pokesal.getSpd();
-
-    if (pokesal.getStatus() == Status.PARALISADO) {
-      spdBase *= (1.0 - pokesal.getStatus().getRedutorAtributo());
-    }
-
-    return (int) spdBase;
   }
 
   /** Executa um ataque, aplica o dano e sorteia a condição de status do defensor. */
@@ -100,7 +59,7 @@ public class BatalhaService {
       System.out.println("Acerto crítico!");
     }
 
-    int dano = calcularDano(atacante, defensor, critico);
+    int dano = calculadora.calcular(atacante, defensor, terrenoAtual, critico);
     int danoSofrido = defensor.receberDano(dano);
     System.out.println(nomeComDono(atacante) + " atacou e causou " + danoSofrido + " de dano em "
         + nomeComDono(defensor) + ". HP: " + defensor.getHpAtual() + "/" + defensor.getHpMax());
@@ -250,13 +209,7 @@ public class BatalhaService {
     while (!pokesalJogador.estaDerrotado() && !pokesalCpu.estaDerrotado()) {
       System.out.println("\n=== Rodada " + rodada + " ===");
 
-      int spdJogador = getSpdEfetiva(pokesalJogador);
-      int spdCpu = getSpdEfetiva(pokesalCpu);
-
-      boolean jogadorComeca = spdJogador >= spdCpu;
-      if (spdJogador == spdCpu) {
-        jogadorComeca = random.nextBoolean();
-      }
+      boolean jogadorComeca = iniciativa.primeiroAtacaAntes(pokesalJogador, pokesalCpu);
 
       if (jogadorComeca) {
         executarTurnoJogador();
