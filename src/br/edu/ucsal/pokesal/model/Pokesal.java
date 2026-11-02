@@ -65,6 +65,7 @@ public class Pokesal {
     return status;
   }
 
+  /** Status começa  com 0 turnos. */
   public void setStatus(Status status) {
     this.status = status;
     this.turnosComStatus = 0;

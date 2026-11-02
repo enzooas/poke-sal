@@ -62,10 +62,7 @@ public class BatalhaService {
         atacante.getTipoElemental().multiplicadorContra(defensor.getTipoElemental());
     danoCalculado *= multiElemental;
 
-    if (atacante.getTipoElemental() != TipoElemental.PLANTA
-        && terrenoAtual.getTipoElemental() == atacante.getTipoElemental()) {
-      danoCalculado *= (1.0 + terrenoAtual.getPorcentagem());
-    }
+    danoCalculado *= 1.0 + terrenoAtual.bonusDeDano(atacante.getTipoElemental());
 
     if (critico) {
       danoCalculado *= MULTIPLICADOR_CRITICO;
@@ -184,7 +181,7 @@ public class BatalhaService {
 
     Itens itemSelecionado = itens.get(escolha - 1);
 
-    if (!treinadorJogador.getMochila().validarUsoItem(itemSelecionado, pokesalJogador)) {
+    if (!itemSelecionado.podeUsarEm(pokesalJogador)) {
       System.out.println("Condição inválida para usar este item! Tente outra ação.");
       return null;
     }
@@ -195,15 +192,7 @@ public class BatalhaService {
   private void aplicarItem(Treinador treinador, Pokesal pokesal, Itens item) {
     treinador.getMochila().registrarUso(item);
     System.out.println(treinador.getNome() + " usou " + item.getNome() + "!");
-
-    if (item == Itens.POTION || item == Itens.SUPERPOTION) {
-      int curaEfetiva = pokesal.curar(item.getValorCura());
-      System.out.println(pokesal.getNomeP() + " recuperou " + curaEfetiva + " de HP! HP atual: "
-          + pokesal.getHpAtual() + "/" + pokesal.getHpMax());
-    } else if (item == Itens.ANTIDOTE) {
-      pokesal.setStatus(Status.NORMAL);
-      System.out.println(pokesal.getNomeP() + " foi curado do envenenamento!");
-    }
+    System.out.println(item.aplicarEm(pokesal));
   }
 
   private void processarFimDeTurno(Pokesal pokesal) {
@@ -237,13 +226,12 @@ public class BatalhaService {
       return;
     }
 
-    if (pokesal.getTipoElemental() == TipoElemental.PLANTA
-        && terrenoAtual == Terreno.CANTEIRO_CENTRAL) {
-      int curaTerreno = (int) (pokesal.getHpMax() * terrenoAtual.getPorcentagem());
-      int curado = pokesal.curar(curaTerreno);
+    double percentualCura = terrenoAtual.curaNoFimDoTurno(pokesal.getTipoElemental());
+    if (percentualCura > 0.0) {
+      int curado = pokesal.curar((int) (pokesal.getHpMax() * percentualCura));
       if (curado > 0) {
         System.out.println(
-            nomeComDono(pokesal) + " recuperou " + curado + " de HP pelo Canteiro Central!");
+            nomeComDono(pokesal) + " recuperou " + curado + " de HP pelo terreno!");
       }
     }
   }
