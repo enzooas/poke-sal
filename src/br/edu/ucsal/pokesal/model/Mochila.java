@@ -44,4 +44,9 @@ public class Mochila {
   public int getQtdUsadaBatalha() {
     return qtdUsadaBatalha;
   }
+
+  /** Guarda um novo item na mochila. */
+  public void adicionarItem(Itens item) {
+    itens.add(item);
+  }
 }

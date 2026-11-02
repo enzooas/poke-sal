@@ -19,7 +19,7 @@ public enum Terreno {
   public TipoElemental getTipoElemental() {
     return tipoElemental;
   }
-  
+
   /** Percentual extra de dano para golpes do tipo favorecido, ou 0 se o tipo não é o do terreno. */
   public double bonusDeDano(TipoElemental atacante) {
     if (atacante == tipoElemental) {

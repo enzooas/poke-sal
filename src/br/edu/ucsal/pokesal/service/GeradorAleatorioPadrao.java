@@ -7,6 +7,7 @@ public class GeradorAleatorioPadrao implements GeradorAleatorio {
 
   private final Random random;
 
+  /** Cria o gerador aleatorio com numeros randomizados. */
   public GeradorAleatorioPadrao(Random random) {
     this.random = random;
   }

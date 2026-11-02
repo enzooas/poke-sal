@@ -1,5 +1,6 @@
 package br.edu.ucsal.pokesal.view;
 
+import br.edu.ucsal.pokesal.model.Historico;
 import br.edu.ucsal.pokesal.model.Mochila;
 import br.edu.ucsal.pokesal.model.Treinador;
 import br.edu.ucsal.pokesal.model.enums.Itens;
@@ -9,6 +10,7 @@ import br.edu.ucsal.pokesal.service.CalculadoraDano;
 import br.edu.ucsal.pokesal.service.GeradorAleatorio;
 import br.edu.ucsal.pokesal.service.GeradorAleatorioPadrao;
 import br.edu.ucsal.pokesal.service.Iniciativa;
+import br.edu.ucsal.pokesal.service.RecompensaService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -21,14 +23,13 @@ public class Main {
   private static final int OPCAO_MOCHILA = 2;
   private static final int OPCAO_HISTORICO = 3;
   private static final int OPCAO_SAIR = 4;
-  private static int totalJogos = 0;
-  private static int vitorias = 0;
-  private static int derrotas = 0;
 
   /** Inicia o jogo, monta o treinador do jogador e mantém o laço do menu principal. */
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
     GeradorAleatorio gerador = new GeradorAleatorioPadrao(new Random());
+    Historico historico = new Historico();
+    RecompensaService recompensas = new RecompensaService(gerador);
     int opcao;
 
     System.out.println("--- Bem-vindo ao PokéSal ---");
@@ -51,17 +52,17 @@ public class Main {
 
       switch (opcao) {
         case OPCAO_BATALHA:
-          iniciarBatalha(jogador, gerador, scanner);
+          iniciarBatalha(jogador, gerador, scanner, historico, recompensas);
           break;
         case OPCAO_MOCHILA:
           verMochila(jogador);
           break;
         case OPCAO_HISTORICO:
-          exibirHistorico();
+          exibirHistorico(historico);
           break;
         case OPCAO_SAIR:
           System.out.println("\n===== RESUMO FINAL DO HISTÓRICO =====");
-          exibirHistorico();
+          exibirHistorico(historico);
           System.out.println("Até a próxima!");
           break;
         default:
@@ -72,8 +73,8 @@ public class Main {
     scanner.close();
   }
 
-  private static void iniciarBatalha(
-      Treinador jogador, GeradorAleatorio gerador, Scanner scanner) {
+  private static void iniciarBatalha(Treinador jogador, GeradorAleatorio gerador,
+        Scanner scanner, Historico historico, RecompensaService recompensas) {
     Treinador cpu =
         new Treinador("CPU", sortearEscolhaCpu(gerador), new Mochila(new ArrayList<>()));
 
@@ -83,30 +84,27 @@ public class Main {
         new BatalhaService(jogador, cpu, gerador, scanner, calculadora, iniciativa);
     Treinador vencedor = batalha.iniciarBatalha();
 
-    totalJogos++;
     if (vencedor == jogador) {
-      vitorias++;
+      historico.registrarVitoria();
       System.out.println("\nVocê venceu a batalha!");
-
-      Itens recompensa = sortearItemRecompensa(gerador);
-      jogador.getMochila().getItens().add(recompensa);
-      System.out.println(
-          "Recompensa obtida: " + recompensa.getNome() + " adicionado à mochila!");
+      Itens recompensa = recompensas.concederRecompensa(jogador);
+      System.out.println("Recompensa obtida: " + recompensa.getNome()
+             + " adicionado à mochila!");
     } else {
-      derrotas++;
+      historico.registrarDerrota();
       System.out.println("\nA CPU venceu a batalha!");
     }
   }
 
-  private static void exibirHistorico() {
+  private static void exibirHistorico(Historico historico) {
     System.out.println("\n===== HISTÓRICO DE BATALHAS =====");
-    if (totalJogos == 0) {
+    if (historico.estaVazio()) {
       System.out.println("Nenhuma batalha registrada.");
       return;
     }
-    System.out.println("Total de jogos: " + totalJogos);
-    System.out.println("Vitórias: " + vitorias);
-    System.out.println("Derrotas: " + derrotas);
+    System.out.println("Total de jogos: " + historico.getTotalJogos());
+    System.out.println("Vitórias: " + historico.getVitorias());
+    System.out.println("Derrotas: " + historico.getDerrotas());
   }
 
   private static void verMochila(Treinador jogador) {
@@ -121,11 +119,6 @@ public class Main {
     for (Itens item : itens) {
       System.out.println("- " + item.getNome());
     }
-  }
-
-  private static Itens sortearItemRecompensa(GeradorAleatorio gerador) {
-    Itens[] todosItens = Itens.values();
-    return todosItens[gerador.proximoInteiro(todosItens.length)];
   }
 
   private static SalDex sortearEscolhaCpu(GeradorAleatorio gerador) {
