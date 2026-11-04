@@ -69,4 +69,9 @@ public class ConsoleRegistro implements RegistroBatalha {
   public void derrotado(String nome) {
     System.out.println(nome + " foi derrotado!");
   }
+  
+  @Override
+  public void erro(String mensagem) {
+    System.out.println("[ERRO] " + mensagem);
+  }
 }

@@ -35,4 +35,7 @@ public interface RegistroBatalha {
 
   /** Registra que um PokéSal foi derrotado. */
   void derrotado(String nome);
+  
+  /** Registra uma falha ocorrida fora da batalha, como no salvamento do resultado. */
+  void erro(String mensagem);
 }
