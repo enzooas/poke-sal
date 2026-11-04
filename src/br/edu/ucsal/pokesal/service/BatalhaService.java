@@ -136,6 +136,7 @@ public class BatalhaService {
     }
 
     if (pokesal.estaDerrotado()) {
+      registro.derrotado(nomeComDono(pokesal));
       return;
     }
 
@@ -147,6 +148,8 @@ public class BatalhaService {
             nomeComDono(pokesal) + " recuperou " + curado + " de HP pelo terreno!");
       }
     }
+
+    registro.fimDeTurno(nomeComDono(pokesal), pokesal.getHpAtual(), pokesal.getHpMax());
   }
 
   /** Roda as rodadas até alguém ser derrotado e devolve o treinador vencedor. */
@@ -160,8 +163,16 @@ public class BatalhaService {
 
     int rodada = 1;
     while (!pokesalJogador.estaDerrotado() && !pokesalCpu.estaDerrotado()) {
-      registro.inicioRodada(rodada);      
-      if (iniciativa.primeiroAtacaAntes(pokesalJogador, pokesalCpu)) {
+      registro.inicioRodada(rodada);
+
+      boolean jogadorComeca = iniciativa.primeiroAtacaAntes(pokesalJogador, pokesalCpu);
+      registro.ordemDoTurno(
+          nomeComDono(jogadorComeca ? pokesalJogador : pokesalCpu),
+          iniciativa.velocidadeEfetiva(pokesalJogador),
+          iniciativa.velocidadeEfetiva(pokesalCpu),
+          iniciativa.haEmpate(pokesalJogador, pokesalCpu));
+
+      if (jogadorComeca) {
         executarTurno(treinadorJogador, pokesalJogador, pokesalCpu, escolhaJogador);
         if (pokesalCpu.estaDerrotado()) {
           break;

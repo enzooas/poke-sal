@@ -74,7 +74,7 @@ public class ConsoleEscolha implements EscolhaDeAcao {
 
   private int lerOpcao(int min, int max) {
     while (true) {
-      System.out.print("Escolha uma opção (" + min + " a " + max + "): ");
+      System.out.print("Escolha uma opção (" + min + " a " + max + "): \n");
       if (scanner.hasNextInt()) {
         int numero = scanner.nextInt();
         if (numero >= min && numero <= max) {

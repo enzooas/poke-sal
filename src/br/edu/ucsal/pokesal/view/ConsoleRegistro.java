@@ -17,6 +17,25 @@ public class ConsoleRegistro implements RegistroBatalha {
   }
 
   @Override
+  public void ordemDoTurno(
+      String quemComeca, int velocidadeJogador, int velocidadeCpu, boolean sorteio) {
+
+    String motivo;
+    if (sorteio) {
+      motivo = "empate de SPD, decidido por sorteio";
+    } else {
+      motivo = "maior SPD";
+    }
+    System.out.println(quemComeca + " começa (" + motivo + "). SPD: "
+        + velocidadeJogador + " x " + velocidadeCpu);
+  }
+
+  @Override
+  public void fimDeTurno(String nome, int hpAtual, int hpMax) {
+    System.out.println(nome + " encerrou o turno com HP: " + hpAtual + "/" + hpMax);
+  }
+
+  @Override
   public void ataque(String atacante, String defensor) {
     System.out.println(atacante + " atacou " + defensor + "!");
   }

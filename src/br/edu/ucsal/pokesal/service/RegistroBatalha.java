@@ -9,6 +9,12 @@ public interface RegistroBatalha {
   /** Anuncia o início de uma rodada. */
   void inicioRodada(int numero);
 
+  /** Anuncia quem age primeiro no turno e o motivo (velocidade ou sorteio). */
+  void ordemDoTurno(String quemComeca, int velocidadeJogador, int velocidadeCpu, boolean sorteio);
+
+  /** Registra o HP de um PokéSal ao final do turno, depois de status e terreno. */
+  void fimDeTurno(String nome, int hpAtual, int hpMax);
+
   /** Registra que um PokéSal atacou outro. */
   void ataque(String atacante, String defensor);
 
