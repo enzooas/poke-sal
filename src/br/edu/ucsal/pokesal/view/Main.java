@@ -25,10 +25,11 @@ import java.util.Scanner;
 /** Ponto de entrada do jogo: exibe o menu principal e acumula o histórico de batalhas. */
 public class Main {
 
-  private static final int OPCAO_BATALHA = 1;
-  private static final int OPCAO_MOCHILA = 2;
-  private static final int OPCAO_HISTORICO = 3;
-  private static final int OPCAO_SAIR = 4;
+  private static final int OPCAO_BATALHA_NORMAL = 1;
+  private static final int OPCAO_TORNEIO = 2;
+  private static final int OPCAO_MOCHILA = 3;
+  private static final int OPCAO_HISTORICO = 4;
+  private static final int OPCAO_SAIR = 5;
 
   /** Inicia o jogo, monta o treinador do jogador e mantém o laço do menu principal. */
   public static void main(String[] args) {
@@ -50,15 +51,16 @@ public class Main {
 
     do {
       System.out.println("\n===== MENU =====");
-      System.out.println("1 - Iniciar Batalha");
-      System.out.println("2 - Ver Mochila");
-      System.out.println("3 - Histórico de Batalhas");
-      System.out.println("4 - Sair");
+      System.out.println("1 - Jogar modo normal");
+      System.out.println("2 - Jogar modo torneio");
+      System.out.println("3 - Ver mochila");
+      System.out.println("4 - Histórico de batalhas");
+      System.out.println("5 - Sair");
 
-      opcao = lerNumero(scanner, OPCAO_BATALHA, OPCAO_SAIR);
+      opcao = lerNumero(scanner, OPCAO_BATALHA_NORMAL, OPCAO_SAIR);
 
       switch (opcao) {
-        case OPCAO_BATALHA:
+        case OPCAO_BATALHA_NORMAL:
           iniciarBatalha(jogador, gerador, scanner, historico, recompensas, repo);
           break;
         case OPCAO_MOCHILA:
