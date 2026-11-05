@@ -20,22 +20,27 @@ public class ResultadoBatalha {
   }
 
   public String getVencedor() {
-	return vencedor;
+    return vencedor;
   }
 
   public String getPerdedor() {
-	return perdedor;
+    return perdedor;
   }
 
   public int getTurnos() {
-	return turnos;
+    return turnos;
   }
 
   public String getPokesalVencedor() {
-	return pokesalVencedor;
+    return pokesalVencedor;
   }
 
   public String getPokesalPerdedor() {
-	return pokesalPerdedor;
+    return pokesalPerdedor;
+  }
+  
+  /** Indica se o treinador informado foi o vencedor. */
+  public boolean venceu(String nomeTreinador) {
+    return vencedor.equals(nomeTreinador);
   }
 }

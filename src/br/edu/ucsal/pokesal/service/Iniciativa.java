@@ -32,7 +32,7 @@ public class Iniciativa {
     }
     return spdPrimeiro > spdSegundo;
   }
-  
+
   /** Verifica se os dois PokéSal têm a mesma SPD efetiva, e a ordem sai de sorteio. */
   public boolean haEmpate(Pokesal primeiro, Pokesal segundo) {
     return velocidadeEfetiva(primeiro) == velocidadeEfetiva(segundo);

@@ -2,9 +2,12 @@ package br.edu.ucsal.pokesal.view;
 
 import br.edu.ucsal.pokesal.model.Historico;
 import br.edu.ucsal.pokesal.model.Mochila;
+import br.edu.ucsal.pokesal.model.ResultadoBatalha;
 import br.edu.ucsal.pokesal.model.Treinador;
 import br.edu.ucsal.pokesal.model.enums.Itens;
 import br.edu.ucsal.pokesal.model.enums.SalDex;
+import br.edu.ucsal.pokesal.repository.RepositorioResultados;
+import br.edu.ucsal.pokesal.repository.RepositorioResultadosMemoria;
 import br.edu.ucsal.pokesal.service.BatalhaService;
 import br.edu.ucsal.pokesal.service.CalculadoraDano;
 import br.edu.ucsal.pokesal.service.CpuEscolha;
@@ -33,6 +36,7 @@ public class Main {
     GeradorAleatorio gerador = new GeradorAleatorioPadrao(new Random());
     Historico historico = new Historico();
     RecompensaService recompensas = new RecompensaService(gerador);
+    RepositorioResultados repo = new RepositorioResultadosMemoria();
     int opcao;
 
     System.out.println("--- Bem-vindo ao PokéSal ---");
@@ -55,7 +59,7 @@ public class Main {
 
       switch (opcao) {
         case OPCAO_BATALHA:
-          iniciarBatalha(jogador, gerador, scanner, historico, recompensas);
+          iniciarBatalha(jogador, gerador, scanner, historico, recompensas, repo);
           break;
         case OPCAO_MOCHILA:
           verMochila(jogador);
@@ -76,8 +80,8 @@ public class Main {
     scanner.close();
   }
 
-  private static void iniciarBatalha(Treinador jogador, GeradorAleatorio gerador,
-        Scanner scanner, Historico historico, RecompensaService recompensas) {
+  private static void iniciarBatalha(Treinador jogador, GeradorAleatorio gerador, Scanner scanner,
+        Historico historico, RecompensaService recompensas, RepositorioResultados repo) {
     Treinador cpu =
         new Treinador("CPU", sortearEscolhaCpu(gerador), new Mochila(new ArrayList<>()));
 
@@ -87,11 +91,12 @@ public class Main {
     EscolhaDeAcao escolhaCpu = new CpuEscolha();
     RegistroBatalha registro = new ConsoleRegistro();
 
-    BatalhaService batalha = new BatalhaService(
-        jogador, cpu, gerador, calculadora, iniciativa, escolhaJogador, escolhaCpu, registro);
-    Treinador vencedor = batalha.iniciarBatalha();
+    BatalhaService batalha = new BatalhaService(jogador, cpu, gerador,
+          calculadora, iniciativa, escolhaJogador, escolhaCpu, registro, repo);
 
-    if (vencedor == jogador) {
+    ResultadoBatalha resultado = batalha.iniciarBatalha();
+
+    if (resultado.venceu(jogador.getNome())) {
       historico.registrarVitoria();
       System.out.println("\nVocê venceu a batalha!");
       Itens recompensa = recompensas.concederRecompensa(jogador);

@@ -1,8 +1,7 @@
 package br.edu.ucsal.pokesal.repository;
 
-import java.util.List;
-
 import br.edu.ucsal.pokesal.model.ResultadoBatalha;
+import java.util.List;
 
 /** Guarda os resultados das batalhas. */
 public interface RepositorioResultados {

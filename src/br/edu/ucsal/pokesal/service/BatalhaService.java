@@ -2,11 +2,13 @@ package br.edu.ucsal.pokesal.service;
 
 import br.edu.ucsal.pokesal.model.Acao;
 import br.edu.ucsal.pokesal.model.Pokesal;
+import br.edu.ucsal.pokesal.model.ResultadoBatalha;
 import br.edu.ucsal.pokesal.model.Treinador;
 import br.edu.ucsal.pokesal.model.enums.Itens;
 import br.edu.ucsal.pokesal.model.enums.Status;
 import br.edu.ucsal.pokesal.model.enums.Terreno;
 import br.edu.ucsal.pokesal.model.enums.TipoElemental;
+import br.edu.ucsal.pokesal.repository.RepositorioResultados;
 
 /** Conduz uma batalha entre o jogador e a CPU, turno a turno, até que haja um vencedor. */
 public class BatalhaService {
@@ -25,13 +27,14 @@ public class BatalhaService {
   private final EscolhaDeAcao escolhaJogador;
   private final EscolhaDeAcao escolhaCpu;
   private final RegistroBatalha registro;
+  private final RepositorioResultados repo;
   private final Terreno terrenoAtual;
 
   /** Cria a batalha com todos os colaboradores recebidos de fora e sorteia o terreno. */
-  public BatalhaService(
-      Treinador treinadorJogador, Treinador treinadorCpu, GeradorAleatorio gerador,
-      CalculadoraDano calculadora, Iniciativa iniciativa,
-      EscolhaDeAcao escolhaJogador, EscolhaDeAcao escolhaCpu, RegistroBatalha registro) {
+  public BatalhaService(Treinador treinadorJogador, Treinador treinadorCpu,
+        GeradorAleatorio gerador, CalculadoraDano calculadora, Iniciativa iniciativa,
+        EscolhaDeAcao escolhaJogador, EscolhaDeAcao escolhaCpu, RegistroBatalha registro,
+        RepositorioResultados repo) {
     this.treinadorJogador = treinadorJogador;
     this.treinadorCpu = treinadorCpu;
     this.pokesalJogador = treinadorJogador.criarPokesal();
@@ -42,6 +45,7 @@ public class BatalhaService {
     this.escolhaJogador = escolhaJogador;
     this.escolhaCpu = escolhaCpu;
     this.registro = registro;
+    this.repo = repo;
     Terreno[] terrenos = Terreno.values();
     this.terrenoAtual = terrenos[gerador.proximoInteiro(terrenos.length)];
   }
@@ -152,8 +156,8 @@ public class BatalhaService {
     registro.fimDeTurno(nomeComDono(pokesal), pokesal.getHpAtual(), pokesal.getHpMax());
   }
 
-  /** Roda as rodadas até alguém ser derrotado e devolve o treinador vencedor. */
-  public Treinador iniciarBatalha() {
+  /** Roda as rodadas até alguém ser derrotado e devolve o resultado da batalha. */
+  public ResultadoBatalha iniciarBatalha() {
     treinadorJogador.getMochila().resetarUsoBatalha();
     treinadorCpu.getMochila().resetarUsoBatalha();
 
@@ -161,8 +165,9 @@ public class BatalhaService {
         nomeComDono(pokesalJogador) + " contra " + nomeComDono(pokesalCpu),
         terrenoAtual.toString());
 
-    int rodada = 1;
+    int rodada = 0;
     while (!pokesalJogador.estaDerrotado() && !pokesalCpu.estaDerrotado()) {
+      rodada++;
       registro.inicioRodada(rodada);
 
       boolean jogadorComeca = iniciativa.primeiroAtacaAntes(pokesalJogador, pokesalCpu);
@@ -188,13 +193,30 @@ public class BatalhaService {
 
       processarFimDeTurno(pokesalJogador);
       processarFimDeTurno(pokesalCpu);
-      rodada++;
     }
 
-    if (pokesalJogador.estaDerrotado()) {
-      return treinadorCpu;
+    boolean jogadorVenceu = !pokesalJogador.estaDerrotado();
+    ResultadoBatalha resultado = montarResultado(jogadorVenceu, rodada);
+    salvarResultado(resultado);
+    return resultado;
+  }
+
+  private ResultadoBatalha montarResultado(boolean jogadorVenceu, int rodadas) {
+    Treinador vencedor = jogadorVenceu ? treinadorJogador : treinadorCpu;
+    Treinador perdedor = jogadorVenceu ? treinadorCpu : treinadorJogador;
+    Pokesal pokesalVencedor = jogadorVenceu ? pokesalJogador : pokesalCpu;
+    Pokesal pokesalPerdedor = jogadorVenceu ? pokesalCpu : pokesalJogador;
+
+    return new ResultadoBatalha(vencedor.getNome(), perdedor.getNome(), rodadas,
+        pokesalVencedor.getNomeP(), pokesalPerdedor.getNomeP());
+  }
+
+  private void salvarResultado(ResultadoBatalha resultado) {
+    try {
+      repo.salvar(resultado);
+    } catch (RuntimeException e) {
+      registro.erro("Falha ao salvar o resultado da batalha: " + e.getMessage());
     }
-    return treinadorJogador;
   }
 
   private String nomeComDono(Pokesal pokesal) {
