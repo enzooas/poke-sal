@@ -11,12 +11,13 @@ import br.edu.ucsal.pokesal.repository.RepositorioResultadosMemoria;
 import br.edu.ucsal.pokesal.service.BatalhaService;
 import br.edu.ucsal.pokesal.service.CalculadoraDano;
 import br.edu.ucsal.pokesal.service.CpuEscolha;
-import br.edu.ucsal.pokesal.service.EscolhaDeAcao;
+import br.edu.ucsal.pokesal.service.FabricaDeBatalhaTorneio;
 import br.edu.ucsal.pokesal.service.GeradorAleatorio;
 import br.edu.ucsal.pokesal.service.GeradorAleatorioPadrao;
 import br.edu.ucsal.pokesal.service.Iniciativa;
 import br.edu.ucsal.pokesal.service.RecompensaService;
-import br.edu.ucsal.pokesal.service.RegistroBatalha;
+import br.edu.ucsal.pokesal.service.RegistroSilencioso;
+import br.edu.ucsal.pokesal.service.Torneio;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -25,11 +26,13 @@ import java.util.Scanner;
 /** Ponto de entrada do jogo: exibe o menu principal e acumula o histórico de batalhas. */
 public class Main {
 
-  private static final int OPCAO_BATALHA_NORMAL = 1;
+  private static final int OPCAO_BATALHA = 1;
   private static final int OPCAO_TORNEIO = 2;
   private static final int OPCAO_MOCHILA = 3;
   private static final int OPCAO_HISTORICO = 4;
   private static final int OPCAO_SAIR = 5;
+  private static final int TORNEIO_PEQUENO = 4;
+  private static final int TORNEIO_GRANDE = 8;
 
   /** Inicia o jogo, monta o treinador do jogador e mantém o laço do menu principal. */
   public static void main(String[] args) {
@@ -41,7 +44,6 @@ public class Main {
     int opcao;
 
     System.out.println("--- Bem-vindo ao PokéSal ---");
-
     SalDex escolhaJogador = escolherPokesal(scanner);
     System.out.println("\nVocê escolheu " + escolhaJogador.getNome() + "!");
 
@@ -51,17 +53,20 @@ public class Main {
 
     do {
       System.out.println("\n===== MENU =====");
-      System.out.println("1 - Jogar modo normal");
-      System.out.println("2 - Jogar modo torneio");
-      System.out.println("3 - Ver mochila");
-      System.out.println("4 - Histórico de batalhas");
-      System.out.println("5 - Sair");
+      System.out.println(OPCAO_BATALHA + " - Jogar modo normal");
+      System.out.println(OPCAO_TORNEIO + " - Jogar modo torneio");
+      System.out.println(OPCAO_MOCHILA + " - Ver mochila");
+      System.out.println(OPCAO_HISTORICO + " - Histórico de batalhas");
+      System.out.println(OPCAO_SAIR + " - Sair");
 
-      opcao = lerNumero(scanner, OPCAO_BATALHA_NORMAL, OPCAO_SAIR);
+      opcao = lerNumero(scanner, OPCAO_BATALHA, OPCAO_SAIR);
 
       switch (opcao) {
-        case OPCAO_BATALHA_NORMAL:
-          iniciarBatalha(jogador, gerador, scanner, historico, recompensas, repo);
+        case OPCAO_BATALHA:
+          jogarNormal(jogador, gerador, scanner, historico, recompensas, repo);
+          break;
+        case OPCAO_TORNEIO:
+          jogarTorneio(jogador, gerador, scanner, repo);
           break;
         case OPCAO_MOCHILA:
           verMochila(jogador);
@@ -82,20 +87,13 @@ public class Main {
     scanner.close();
   }
 
-  private static void iniciarBatalha(Treinador jogador, GeradorAleatorio gerador, Scanner scanner,
-        Historico historico, RecompensaService recompensas, RepositorioResultados repo) {
-    Treinador cpu =
-        new Treinador("CPU", sortearEscolhaCpu(gerador), new Mochila(new ArrayList<>()));
-
-    CalculadoraDano calculadora = new CalculadoraDano();
-    Iniciativa iniciativa = new Iniciativa(gerador);
-    EscolhaDeAcao escolhaJogador = new ConsoleEscolha(scanner);
-    EscolhaDeAcao escolhaCpu = new CpuEscolha();
-    RegistroBatalha registro = new ConsoleRegistro();
+  private static void jogarNormal(Treinador jogador, GeradorAleatorio gerador, Scanner scanner,
+      Historico historico, RecompensaService recompensas, RepositorioResultados repo) {
+    Treinador cpu = criarCpu("CPU", gerador);
 
     BatalhaService batalha = new BatalhaService(jogador, cpu, gerador,
-          calculadora, iniciativa, escolhaJogador, escolhaCpu, registro, repo);
-
+        new CalculadoraDano(), new Iniciativa(gerador),
+        new ConsoleEscolha(scanner), new CpuEscolha(), new ConsoleRegistro(), repo);
     ResultadoBatalha resultado = batalha.iniciarBatalha();
 
     if (resultado.venceu(jogador.getNome())) {
@@ -103,10 +101,47 @@ public class Main {
       System.out.println("\nVocê venceu a batalha!");
       Itens recompensa = recompensas.concederRecompensa(jogador);
       System.out.println("Recompensa obtida: " + recompensa.getNome()
-             + " adicionado à mochila!");
+          + " adicionado à mochila!");
     } else {
       historico.registrarDerrota();
       System.out.println("\nA CPU venceu a batalha!");
+    }
+  }
+
+  private static void jogarTorneio(Treinador jogador, GeradorAleatorio gerador,
+      Scanner scanner, RepositorioResultados repositorio) {
+    System.out.println("\nTamanho do torneio (" + TORNEIO_PEQUENO + " ou " + TORNEIO_GRANDE + ")");
+    int tamanho = lerTamanhoTorneio(scanner);
+
+    List<Treinador> participantes = new ArrayList<>();
+    participantes.add(jogador);
+    for (int i = 1; i < tamanho; i++) {
+      participantes.add(criarCpu("CPU " + i, gerador));
+    }
+
+    FabricaDeBatalhaTorneio fabrica = new FabricaDeBatalhaTorneio(jogador,
+        new ConsoleEscolha(scanner), gerador, new ConsoleRegistro(),
+        new RegistroSilencioso(), repositorio);
+    Treinador campeao = new Torneio(participantes, fabrica).disputar();
+
+    if (campeao == jogador) {
+      System.out.println("\nVocê é o campeão do torneio!");
+    } else {
+      System.out.println("\nCampeão do torneio: " + campeao.getNome());
+    }
+  }
+
+  private static Treinador criarCpu(String nome, GeradorAleatorio gerador) {
+    return new Treinador(nome, sortearEscolhaCpu(gerador), new Mochila(new ArrayList<>()));
+  }
+
+  private static int lerTamanhoTorneio(Scanner scanner) {
+    while (true) {
+      int valor = lerNumero(scanner, TORNEIO_PEQUENO, TORNEIO_GRANDE);
+      if (valor == TORNEIO_PEQUENO || valor == TORNEIO_GRANDE) {
+        return valor;
+      }
+      System.out.println("Escolha " + TORNEIO_PEQUENO + " ou " + TORNEIO_GRANDE + ".");
     }
   }
 

@@ -38,7 +38,7 @@ public class ResultadoBatalha {
   public String getPokesalPerdedor() {
     return pokesalPerdedor;
   }
-  
+
   /** Indica se o treinador informado foi o vencedor. */
   public boolean venceu(String nomeTreinador) {
     return vencedor.equals(nomeTreinador);

@@ -85,13 +85,13 @@ public class BatalhaService {
     }
     if (atacante.getTipoElemental() == TipoElemental.FOGO) {
       defensor.setStatus(Status.QUEIMADO);
-      registro.efeitoStatus(nomeComDono(defensor) + " foi queimado!");
+      registro.efeitoStatus(nomeComDono(defensor) + " foi queimado!\n");
     } else if (atacante.getTipoElemental() == TipoElemental.PLANTA) {
       defensor.setStatus(Status.ENVENENADO);
-      registro.efeitoStatus(nomeComDono(defensor) + " foi envenenado!");
+      registro.efeitoStatus(nomeComDono(defensor) + " foi envenenado!\n");
     } else {
       defensor.setStatus(Status.PARALISADO);
-      registro.efeitoStatus(nomeComDono(defensor) + " foi paralisado!");
+      registro.efeitoStatus(nomeComDono(defensor) + " foi paralisado!\n");
     }
   }
 
@@ -127,7 +127,7 @@ public class BatalhaService {
 
       pokesal.receberDano(danoStatus);
       registro.efeitoStatus(nomeComDono(pokesal) + " sofreu " + danoStatus
-          + " de dano devido ao status " + statusAtual + "!");
+          + " de dano devido ao status " + statusAtual + "!\n");
     }
 
     if (statusAtual != Status.NORMAL) {
@@ -135,7 +135,7 @@ public class BatalhaService {
       if (statusAtual.expira()
           && pokesal.getTurnosComStatus() >= statusAtual.getDuracaoTurnos()) {
         pokesal.setStatus(Status.NORMAL);
-        registro.efeitoStatus(nomeComDono(pokesal) + " se recuperou de " + statusAtual + "!");
+        registro.efeitoStatus(nomeComDono(pokesal) + " se recuperou de " + statusAtual + "!\n");
       }
     }
 
@@ -149,10 +149,9 @@ public class BatalhaService {
       int curado = pokesal.curar((int) (pokesal.getHpMax() * percentualCura));
       if (curado > 0) {
         registro.efeitoTerreno(
-            nomeComDono(pokesal) + " recuperou " + curado + " de HP pelo terreno!");
+            nomeComDono(pokesal) + " recuperou " + curado + " de HP pelo terreno!\n");
       }
     }
-
     registro.fimDeTurno(nomeComDono(pokesal), pokesal.getHpAtual(), pokesal.getHpMax());
   }
 

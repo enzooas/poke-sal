@@ -13,14 +13,15 @@ public class FabricaDeBatalhaTorneio implements FabricaDeBatalha {
   private final RegistroBatalha registroSilencioso;
   private final RepositorioResultados repositorio;
 
-  public FabricaDeBatalhaTorneio(Treinador jogador, EscolhaDeAcao escolhaJogador, GeradorAleatorio gerador,
-		RegistroBatalha registroJogador, RegistroBatalha registroSilencioso, RepositorioResultados repositorio) {
-	this.jogador = jogador;
-	this.escolhaJogador = escolhaJogador;
-	this.gerador = gerador;
-	this.registroJogador = registroJogador;
-	this.registroSilencioso = registroSilencioso;
-	this.repositorio = repositorio;
+  public FabricaDeBatalhaTorneio(Treinador jogador, EscolhaDeAcao escolhaJogador,
+        GeradorAleatorio gerador, RegistroBatalha registroJogador,
+        RegistroBatalha registroSilencioso, RepositorioResultados repositorio) {
+    this.jogador = jogador;
+    this.escolhaJogador = escolhaJogador;
+    this.gerador = gerador;
+    this.registroJogador = registroJogador;
+    this.registroSilencioso = registroSilencioso;
+    this.repositorio = repositorio;
   }
 
   @Override

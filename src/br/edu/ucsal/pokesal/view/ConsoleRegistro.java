@@ -37,12 +37,12 @@ public class ConsoleRegistro implements RegistroBatalha {
 
   @Override
   public void ataque(String atacante, String defensor) {
-    System.out.println(atacante + " atacou " + defensor + "!");
+    System.out.println(atacante + " atacou " + defensor + "!\n");
   }
 
   @Override
   public void acertoCritico() {
-    System.out.println("Acerto crítico!");
+    System.out.println("Acerto crítico!\n");
   }
 
   @Override
@@ -67,7 +67,7 @@ public class ConsoleRegistro implements RegistroBatalha {
 
   @Override
   public void derrotado(String nome) {
-    System.out.println(nome + " foi derrotado!");
+    System.out.println(nome + " foi derrotado!\n");
   }
 
   @Override
