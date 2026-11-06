@@ -3,6 +3,7 @@ package br.edu.ucsal.pokesal.view;
 import br.edu.ucsal.pokesal.model.Historico;
 import br.edu.ucsal.pokesal.model.Mochila;
 import br.edu.ucsal.pokesal.model.ResultadoBatalha;
+import br.edu.ucsal.pokesal.model.ResultadoTorneio;
 import br.edu.ucsal.pokesal.model.Treinador;
 import br.edu.ucsal.pokesal.model.enums.Itens;
 import br.edu.ucsal.pokesal.model.enums.SalDex;
@@ -17,6 +18,7 @@ import br.edu.ucsal.pokesal.service.GeradorAleatorioPadrao;
 import br.edu.ucsal.pokesal.service.Iniciativa;
 import br.edu.ucsal.pokesal.service.RecompensaService;
 import br.edu.ucsal.pokesal.service.RegistroSilencioso;
+import br.edu.ucsal.pokesal.service.ServicoConquistas;
 import br.edu.ucsal.pokesal.service.Torneio;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,8 @@ public class Main {
   private static final int OPCAO_SAIR = 5;
   private static final int TORNEIO_PEQUENO = 4;
   private static final int TORNEIO_GRANDE = 8;
+  private static final int PREMIO_TORNEIO_PEQUENO = 2;
+  private static final int PREMIO_TORNEIO_GRANDE = 3;
 
   /** Inicia o jogo, monta o treinador do jogador e mantém o laço do menu principal. */
   public static void main(String[] args) {
@@ -40,16 +44,14 @@ public class Main {
     GeradorAleatorio gerador = new GeradorAleatorioPadrao(new Random());
     Historico historico = new Historico();
     RecompensaService recompensas = new RecompensaService(gerador);
+    ServicoConquistas conquistas = new ServicoConquistas(new ConsoleNotificador());
     RepositorioResultados repo = new RepositorioResultadosMemoria();
     int opcao;
 
     System.out.println("--- Bem-vindo ao PokéSal ---");
     SalDex escolhaJogador = escolherPokesal(scanner);
     System.out.println("\nVocê escolheu " + escolhaJogador.getNome() + "!");
-
-    Mochila mochilaJogador =
-        new Mochila(new ArrayList<>(List.of(Itens.POTION, Itens.SUPERPOTION, Itens.ANTIDOTE)));
-    Treinador jogador = new Treinador("Você", escolhaJogador, mochilaJogador);
+    Treinador jogador = new Treinador("Você", escolhaJogador, Mochila.criarMochilaPadrao());
 
     do {
       System.out.println("\n===== MENU =====");
@@ -63,10 +65,10 @@ public class Main {
 
       switch (opcao) {
         case OPCAO_BATALHA:
-          jogarNormal(jogador, gerador, scanner, historico, recompensas, repo);
+          jogarNormal(jogador, gerador, scanner, historico, recompensas, conquistas, repo);
           break;
         case OPCAO_TORNEIO:
-          jogarTorneio(jogador, gerador, scanner, repo);
+          jogarTorneio(jogador, gerador, scanner, historico, recompensas, repo);
           break;
         case OPCAO_MOCHILA:
           verMochila(jogador);
@@ -88,7 +90,8 @@ public class Main {
   }
 
   private static void jogarNormal(Treinador jogador, GeradorAleatorio gerador, Scanner scanner,
-      Historico historico, RecompensaService recompensas, RepositorioResultados repo) {
+      Historico historico, RecompensaService recompensas, ServicoConquistas conquistas,
+      RepositorioResultados repo) {
     Treinador cpu = criarCpu("CPU", gerador);
 
     BatalhaService batalha = new BatalhaService(jogador, cpu, gerador,
@@ -97,37 +100,48 @@ public class Main {
     ResultadoBatalha resultado = batalha.iniciarBatalha();
 
     if (resultado.venceu(jogador.getNome())) {
-      historico.registrarVitoria();
       System.out.println("\nVocê venceu a batalha!");
       Itens recompensa = recompensas.concederRecompensa(jogador);
       System.out.println("Recompensa obtida: " + recompensa.getNome()
           + " adicionado à mochila!");
+      conquistas.registrarVitoria(historico);
     } else {
-      historico.registrarDerrota();
       System.out.println("\nA CPU venceu a batalha!");
+      conquistas.registrarDerrota(historico);
     }
   }
 
   private static void jogarTorneio(Treinador jogador, GeradorAleatorio gerador,
-      Scanner scanner, RepositorioResultados repositorio) {
+      Scanner scanner, Historico historico, RecompensaService recompensas,
+      RepositorioResultados repo) {
     System.out.println("\nTamanho do torneio (" + TORNEIO_PEQUENO + " ou " + TORNEIO_GRANDE + ")");
     int tamanho = lerTamanhoTorneio(scanner);
 
+    Treinador jogadorTorneio = jogador.comMochila(Mochila.criarMochilaPadrao());
     List<Treinador> participantes = new ArrayList<>();
-    participantes.add(jogador);
+    participantes.add(jogadorTorneio);
     for (int i = 1; i < tamanho; i++) {
       participantes.add(criarCpu("CPU " + i, gerador));
     }
 
-    FabricaDeBatalhaTorneio fabrica = new FabricaDeBatalhaTorneio(jogador,
+    FabricaDeBatalhaTorneio fabrica = new FabricaDeBatalhaTorneio(jogadorTorneio,
         new ConsoleEscolha(scanner), gerador, new ConsoleRegistro(),
-        new RegistroSilencioso(), repositorio);
-    Treinador campeao = new Torneio(participantes, fabrica).disputar();
+        new RegistroSilencioso(), repo);
+    ResultadoTorneio resultado = new Torneio(participantes, fabrica,
+        new ConsoleAvisoTorneio()).disputar();
 
-    if (campeao == jogador) {
+    boolean campeao = resultado.getCampeao() == jogadorTorneio;
+    historico.registrarTorneio(campeao, resultado.vitoriasDe(jogadorTorneio.getNome()));
+
+    if (campeao) {
       System.out.println("\nVocê é o campeão do torneio!");
+      int quantidade = tamanho == TORNEIO_PEQUENO ? PREMIO_TORNEIO_PEQUENO : PREMIO_TORNEIO_GRANDE;
+      for (Itens item : recompensas.concederRecompensa(jogador, quantidade)) {
+        System.out.println("Prêmio do torneio: " + item.getNome() + " adicionado à mochila!");
+      }
     } else {
-      System.out.println("\nCampeão do torneio: " + campeao.getNome());
+      System.out.println("\nVocê foi eliminado. Campeão do torneio: "
+          + resultado.getCampeao().getNome());
     }
   }
 
@@ -146,14 +160,24 @@ public class Main {
   }
 
   private static void exibirHistorico(Historico historico) {
-    System.out.println("\n===== HISTÓRICO DE BATALHAS =====");
+    System.out.println("\n===== HISTÓRICO =====");
     if (historico.estaVazio()) {
       System.out.println("Nenhuma batalha registrada.");
       return;
     }
-    System.out.println("Total de jogos: " + historico.getTotalJogos());
-    System.out.println("Vitórias: " + historico.getVitorias());
-    System.out.println("Derrotas: " + historico.getDerrotas());
+    System.out.println("-- Modo normal --");
+    System.out.println("Total de jogos: " + historico.getTotalJogosNormais());
+    System.out.println("Vitórias: " + historico.getVitoriasNormais());
+    System.out.println("Derrotas: " + historico.getDerrotasNormais());
+    System.out.println("Sequência atual: " + historico.getSequenciaAtual());
+    System.out.println("Melhor sequência: " + historico.getMelhorSequencia());
+
+    System.out.println("\n-- Torneios --");
+    System.out.println("Torneios disputados: " + historico.getTorneiosDisputados());
+    System.out.println("Títulos: " + historico.getTitulos());
+    System.out.println("Total de jogos: " + historico.getJogosEmTorneio());
+    System.out.println("Vitórias: " + historico.getVitoriasEmTorneio());
+    System.out.println("Derrotas: " + historico.getDerrotasEmTorneio());
   }
 
   private static void verMochila(Treinador jogador) {

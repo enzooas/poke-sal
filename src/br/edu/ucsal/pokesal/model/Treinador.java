@@ -32,4 +32,9 @@ public class Treinador {
   public Pokesal criarPokesal() {
     return new Pokesal(escolha);
   }
+
+  /** Cria outro treinador com o mesmo nome e PokéSal, mas com a mochila informada. */
+  public Treinador comMochila(Mochila novaMochila) {
+    return new Treinador(nome, escolha, novaMochila);
+  }
 }
