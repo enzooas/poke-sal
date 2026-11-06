@@ -12,6 +12,7 @@ public class Historico {
   private int vitoriasEmTorneio;
   private int derrotasEmTorneio;
 
+  /** Registra vitória no modo normal e aumenta a sequência de vitórias seguidas. */
   public void registrarVitoriaNormal() {
     vitoriasNormais++;
     sequenciaAtual++;
@@ -26,6 +27,7 @@ public class Historico {
     sequenciaAtual = 0;
   }
 
+  /** Registra um torneio disputado, sem alterar a sequência de vitórias do modo normal. */
   public void registrarTorneio(boolean campeao, int vitorias) {
     torneiosDisputados++;
     vitoriasEmTorneio += vitorias;

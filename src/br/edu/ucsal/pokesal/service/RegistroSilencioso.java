@@ -1,65 +1,67 @@
 package br.edu.ucsal.pokesal.service;
 
+/** Registro que ignora todos os eventos, usado em batalhas automáticas e em testes. */
 public class RegistroSilencioso implements RegistroBatalha {
 
   @Override
   public void inicioBatalha(String confronto, String terreno) {
-  	// intencionalmente vazio
+  // no-op
   }
 
   @Override
   public void inicioRodada(int numero) {
-	// intencionalmente vazio
+  // no-op
   }
 
   @Override
-  public void ordemDoTurno(String quemComeca, int velocidadeJogador, int velocidadeCpu, boolean sorteio) {
-	// intencionalmente vazio
+  public void ordemDoTurno(String quemComeca, int velocidadeJogador,
+      int velocidadeCpu, boolean sorteio) {
+  // no-op
   }
 
   @Override
   public void fimDeTurno(String nome, int hpAtual, int hpMax) {
-	// intencionalmente vazio
+  // no-op
   }
 
   @Override
   public void ataque(String atacante, String defensor) {
-	// intencionalmente vazio
+  // no-op
   }
 
   @Override
   public void acertoCritico() {
-	// intencionalmente vazio
+  // no-op
   }
 
   @Override
   public void dano(String defensor, int dano, int hpAtual, int hpMax) {
-	// intencionalmente vazio
+  // no-op
   }
 
   @Override
   public void efeitoStatus(String mensagem) {
-	// intencionalmente vazio
+  // no-op
   }
 
   @Override
   public void efeitoTerreno(String mensagem) {
-	// intencionalmente vazio
+  // no-op
   }
 
   @Override
   public void usoItem(String mensagem) {
-	// intencionalmente vazio
+  // no-op
   }
 
   @Override
   public void derrotado(String nome) {
-	// intencionalmente vazio
+  // no-op
   }
 
   @Override
   public void erro(String mensagem) {
-	// intencionalmente vazio	
+  // no-op
   }
 }
 
