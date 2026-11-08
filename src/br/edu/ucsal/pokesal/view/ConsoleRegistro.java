@@ -41,6 +41,16 @@ public class ConsoleRegistro implements RegistroBatalha {
   }
 
   @Override
+  public void golpeErrou(String atacante, String defensor) {
+    System.out.println(atacante + " errou o golpe! " + defensor + " não sofreu dano.");
+  }
+
+  @Override
+  public void contraAtaque(String defensor, String atacante) {
+    System.out.println(defensor + " defendeu o golpe e contra-atacou " + atacante + "!");
+  }
+
+  @Override
   public void acertoCritico() {
     System.out.println("Acerto crítico!");
   }

@@ -14,6 +14,9 @@ import br.edu.ucsal.pokesal.service.GeradorAleatorioPadrao;
 import br.edu.ucsal.pokesal.service.Iniciativa;
 import br.edu.ucsal.pokesal.service.RecompensaService;
 import br.edu.ucsal.pokesal.service.RegistroBatalha;
+import br.edu.ucsal.pokesal.service.ServicoTerreno;
+import br.edu.ucsal.pokesal.service.ServicoTerrenoPadrao;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -87,8 +90,10 @@ public class Main {
     EscolhaDeAcao escolhaCpu = new CpuEscolha();
     RegistroBatalha registro = new ConsoleRegistro();
 
-    BatalhaService batalha = new BatalhaService(
-        jogador, cpu, gerador, calculadora, iniciativa, escolhaJogador, escolhaCpu, registro);
+    ServicoTerreno servicoTerreno = new ServicoTerrenoPadrao(Clock.systemDefaultZone());
+
+    BatalhaService batalha = new BatalhaService(jogador, cpu, gerador, calculadora, iniciativa,
+        escolhaJogador, escolhaCpu, registro, servicoTerreno);
     Treinador vencedor = batalha.iniciarBatalha();
 
     if (vencedor == jogador) {
