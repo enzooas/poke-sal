@@ -14,6 +14,7 @@ public class Pokesal {
   private final int atk;
   private final int def;
   private final int spd;
+  private final Golpe golpe;
   private Status status;
   private int turnosComStatus;
 
@@ -26,6 +27,7 @@ public class Pokesal {
     this.atk = saldex.getAtk();
     this.def = saldex.getDef();
     this.spd = saldex.getSpd();
+    this.golpe = saldex.getGolpe();
     this.status = Status.NORMAL;
   }
 
@@ -59,6 +61,10 @@ public class Pokesal {
 
   public int getSpd() {
     return spd;
+  }
+
+  public Golpe getGolpe() {
+    return golpe;
   }
 
   public Status getStatus() {
