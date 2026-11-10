@@ -1,24 +1,38 @@
 package br.edu.ucsal.pokesal.model.enums;
 
-/** Terrenos de batalha e o bônus percentual concedido ao tipo elemental correspondente. */
+/** Terrenos de batalha com o bônus de dano e a cura de fim de turno de cada um. */
 public enum Terreno {
-  ASFALTO_QUENTE(TipoElemental.FOGO, 0.15),
-  POCA_CHUVA(TipoElemental.AGUA, 0.1),
-  CANTEIRO_CENTRAL(TipoElemental.PLANTA, 0.05);
+  ASFALTO_QUENTE(TipoElemental.FOGO, 0.15, 0.0),
+  POCA_CHUVA(TipoElemental.AGUA, 0.1, 0.0),
+  CANTEIRO_CENTRAL(TipoElemental.PLANTA, 0.0, 0.05);
 
   private final TipoElemental tipoElemental;
-  private final double porcentagem;
+  private final double bonusDano;
+  private final double curaFimDeTurno;
 
-  Terreno(TipoElemental tipoElemental, double porcentagem) {
+  Terreno(TipoElemental tipoElemental, double bonusDano, double curaFimDeTurno) {
     this.tipoElemental = tipoElemental;
-    this.porcentagem = porcentagem;
+    this.bonusDano = bonusDano;
+    this.curaFimDeTurno = curaFimDeTurno;
   }
 
   public TipoElemental getTipoElemental() {
     return tipoElemental;
   }
 
-  public double getPorcentagem() {
-    return porcentagem;
+  /** Percentual extra de dano para golpes do tipo favorecido, ou 0 se o tipo não é o do terreno. */
+  public double bonusDeDano(TipoElemental atacante) {
+    if (atacante == tipoElemental) {
+      return bonusDano;
+    }
+    return 0.0;
+  }
+
+  /** Percentual do HP máximo recuperado no fim do turno pelo tipo favorecido. */
+  public double curaNoFimDoTurno(TipoElemental tipo) {
+    if (tipo == tipoElemental) {
+      return curaFimDeTurno;
+    }
+    return 0.0;
   }
 }
