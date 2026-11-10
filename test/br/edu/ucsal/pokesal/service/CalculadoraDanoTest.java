@@ -1,5 +1,6 @@
 package br.edu.ucsal.pokesal.service;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -14,7 +15,7 @@ public class CalculadoraDanoTest {
   private final CalculadoraDano calculadora = new CalculadoraDano();
 
   @Test
-  public void testEfeitoTerrenoEstacionamentoUCSal() {
+  public void testEfeitoTerrenoEstacionamentoUcsal() {
     Pokesal atacante = new Pokesal(SalDex.CHARSAL);
     Pokesal defensor = new Pokesal(SalDex.CHARSAL);
 
@@ -30,6 +31,16 @@ public class CalculadoraDanoTest {
 
   @Test
   public void testCalculoDanoBoundaryValues() {
+    Pokesal alvo = new Pokesal(SalDex.BULBASAL);
+    int hpMaximo = alvo.getHpMax();
+
+    alvo.receberDano(hpMaximo + 1000);
+    assertEquals(0, alvo.getHpAtual(), "HP nunca fica negativo");
+    assertTrue(alvo.estaDerrotado());
+
+    alvo.curar(hpMaximo + 1000);
+    assertEquals(hpMaximo, alvo.getHpAtual(), "Cura não ultrapassa o HP máximo");
+
     Pokesal bulbasal = new Pokesal(SalDex.BULBASAL);
     Pokesal squirtsal = new Pokesal(SalDex.SQUIRTSAL);
     Pokesal charsal = new Pokesal(SalDex.CHARSAL);
