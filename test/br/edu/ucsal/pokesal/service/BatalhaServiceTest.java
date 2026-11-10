@@ -77,7 +77,7 @@ public class BatalhaServiceTest {
    * sem crítico, contra-ataque nem status.
    */
   private BatalhaService criarBatalhaVencidaPeloJogador() {
-    BatalhaService batalha = criarBatalha(
+    final BatalhaService batalha = criarBatalha(
         treinador("Jogador", SalDex.CHARSAL), treinador("CPU", SalDex.BULBASAL),
         Terreno.POCA_CHUVA);
     when(iniciativa.primeiroAtacaAntes(any(Pokesal.class), any(Pokesal.class))).thenReturn(true);
@@ -95,7 +95,7 @@ public class BatalhaServiceTest {
   public void testSequenciaDeEventosNoTurno() {
     Treinador jogador = treinador("Jogador", SalDex.CHARSAL);
     Treinador cpu = treinador("CPU", SalDex.BULBASAL, Itens.POTION);
-    BatalhaService batalha = criarBatalha(jogador, cpu, Terreno.CANTEIRO_CENTRAL);
+    final BatalhaService batalha = criarBatalha(jogador, cpu, Terreno.CANTEIRO_CENTRAL);
 
     // Sequências: rodada 1 o jogador começa; na rodada 2 a CPU começa e usa Potion.
     when(iniciativa.primeiroAtacaAntes(any(Pokesal.class), any(Pokesal.class)))
@@ -124,7 +124,7 @@ public class BatalhaServiceTest {
   public void testResultadoSalvoAoFimDaBatalha() {
     BatalhaService batalha = criarBatalhaVencidaPeloJogador();
 
-    ResultadoBatalha devolvido = batalha.iniciarBatalha();
+    final ResultadoBatalha devolvido = batalha.iniciarBatalha();
 
     ArgumentCaptor<ResultadoBatalha> captor = ArgumentCaptor.forClass(ResultadoBatalha.class);
     verify(repositorio, times(1)).salvar(captor.capture());
