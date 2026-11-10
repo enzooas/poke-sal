@@ -1,8 +1,10 @@
 package br.edu.ucsal.pokesal.service;
 
-/** Avisa o jogador quando ele atinge um marco de vitórias seguidas. */
+import br.edu.ucsal.pokesal.model.enums.Conquista;
+
+/** Avisa o jogador quando ele obtém uma conquista por sequência de vitórias+. */
 public interface NotificadorConquista {
 
-  /** Informa que uma conquista foi desbloqueada. */
-  void conquistaDesbloqueada(int sequencia);
+  /** Informa que uma conquista foi obtida. */
+  void conquistaObtida(Conquista conquista, int sequencia);
 }

@@ -4,12 +4,12 @@ import br.edu.ucsal.pokesal.model.Golpe;
 
 /** Catálogo com os atributos base e o golpe de cada PokéSal disponível para escolha. */
 public enum SalDex {
-  BULBASAL("BulbaSal", TipoElemental.PLANTA, 45, 49, 49, 45, new Golpe(95)),
-  CHARSAL("CharSal", TipoElemental.FOGO, 39, 52, 43, 65, new Golpe(90)),
+  BULBASAL("BulbaSal", TipoElemental.PLANTA, 45, 49, 49, 45, new Golpe(90)),
+  CHARSAL("CharSal", TipoElemental.FOGO, 39, 52, 43, 65, new Golpe(85)),
   SQUIRTSAL("SquirtSal", TipoElemental.AGUA, 44, 48, 65, 43, new Golpe(95)),
   CHIKOSAL("ChikoSal", TipoElemental.PLANTA, 45, 49, 65, 45, new Golpe(90)),
   CYNDASAL("CyndaSal", TipoElemental.FOGO, 39, 52, 43, 65, new Golpe(85)),
-  TOTOSAL("TotoSal", TipoElemental.AGUA, 50, 65, 64, 43, new Golpe(80));
+  TOTOSAL("TotoSal", TipoElemental.AGUA, 50, 65, 64, 43, new Golpe(75));
 
   private final String nome;
   private final TipoElemental tipoElemental;
