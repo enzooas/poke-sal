@@ -18,6 +18,12 @@ public interface RegistroBatalha {
   /** Registra que um PokéSal atacou outro. */
   void ataque(String atacante, String defensor);
 
+  /** Registra que o golpe errou o alvo pela precisão e não causou dano. */
+  void golpeErrou(String atacante, String defensor);
+
+  /** Registra que o defensor bloqueou o golpe e contra-atacou. */
+  void contraAtaque(String defensor, String atacante);
+
   /** Registra que o golpe foi um acerto crítico. */
   void acertoCritico();
 
@@ -35,4 +41,7 @@ public interface RegistroBatalha {
 
   /** Registra que um PokéSal foi derrotado. */
   void derrotado(String nome);
+
+  /** Registra uma falha ocorrida fora da batalha, como no salvamento do resultado. */
+  void erro(String mensagem);
 }

@@ -45,6 +45,11 @@ public class Mochila {
     return qtdUsadaBatalha;
   }
 
+  /** Cria uma mochila nova com os itens-padrão de início de jogo. */
+  public static Mochila criarMochilaPadrao() {
+    return new Mochila(List.of(Itens.POTION, Itens.SUPERPOTION, Itens.ANTIDOTE));
+  }
+
   /** Guarda um novo item na mochila. */
   public void adicionarItem(Itens item) {
     itens.add(item);

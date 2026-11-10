@@ -2,6 +2,8 @@ package br.edu.ucsal.pokesal.service;
 
 import br.edu.ucsal.pokesal.model.Treinador;
 import br.edu.ucsal.pokesal.model.enums.Itens;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Concede ao treinador um item sorteado como recompensa de vitória. */
 public class RecompensaService {
@@ -19,5 +21,14 @@ public class RecompensaService {
     Itens sorteado = itens[gerador.proximoInteiro(itens.length)];
     treinador.getMochila().adicionarItem(sorteado);
     return sorteado;
+  }
+
+  /** Concede vários itens sorteados e devolve a lista do que foi entregue. */
+  public List<Itens> concederRecompensa(Treinador treinador, int quantidade) {
+    List<Itens> concedidos = new ArrayList<>();
+    for (int i = 0; i < quantidade; i++) {
+      concedidos.add(concederRecompensa(treinador));
+    }
+    return concedidos;
   }
 }

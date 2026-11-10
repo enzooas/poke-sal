@@ -1,13 +1,13 @@
 package br.edu.ucsal.pokesal.model;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import br.edu.ucsal.pokesal.model.enums.Itens;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.Test;
 
+/** Testes do limite de itens usáveis por batalha. */
 public class MochilaTest {
 
   @Test
@@ -21,9 +21,8 @@ public class MochilaTest {
     mochila.registrarUso(Itens.POTION);
     mochila.registrarUso(Itens.ANTIDOTE);
 
-    assertThrows(IllegalStateException.class, () -> {
-        mochila.registrarUso(Itens.SUPERPOTION);
-    }, "O treinador não deve poder usar mais que 2 itens");
+    assertThrows(IllegalStateException.class,
+        () -> mochila.registrarUso(Itens.SUPERPOTION),
+        "O treinador não deve poder usar mais que 2 itens");
   }
-
 }

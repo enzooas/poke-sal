@@ -1,12 +1,16 @@
 package br.edu.ucsal.pokesal.service;
 
 import br.edu.ucsal.pokesal.model.Acao;
+import br.edu.ucsal.pokesal.model.Golpe;
 import br.edu.ucsal.pokesal.model.Pokesal;
+import br.edu.ucsal.pokesal.model.ResultadoBatalha;
 import br.edu.ucsal.pokesal.model.Treinador;
 import br.edu.ucsal.pokesal.model.enums.Itens;
 import br.edu.ucsal.pokesal.model.enums.Status;
 import br.edu.ucsal.pokesal.model.enums.Terreno;
 import br.edu.ucsal.pokesal.model.enums.TipoElemental;
+import br.edu.ucsal.pokesal.repository.RepositorioResultados;
+import java.util.List;
 
 /** Conduz uma batalha entre o jogador e a CPU, turno a turno, até que haja um vencedor. */
 public class BatalhaService {
@@ -14,6 +18,9 @@ public class BatalhaService {
   private static final double CHANCE_CRITICO = 0.0625;
   private static final double CHANCE_STATUS = 0.15;
   private static final int DANO_MINIMO = 1;
+  private static final int PORCENTAGEM_MAXIMA = 100;
+  private static final double CHANCE_CONTRA_ATAQUE = 0.06;
+  private static final double FRACAO_CONTRA_ATAQUE = 0.5;
 
   private final Treinador treinadorJogador;
   private final Treinador treinadorCpu;
@@ -25,13 +32,18 @@ public class BatalhaService {
   private final EscolhaDeAcao escolhaJogador;
   private final EscolhaDeAcao escolhaCpu;
   private final RegistroBatalha registro;
+  private final RepositorioResultados repo;
   private final Terreno terrenoAtual;
 
-  /** Cria a batalha com todos os colaboradores recebidos de fora e sorteia o terreno. */
+  /**
+   * Cria a batalha com todos os colaboradores recebidos de fora e sorteia o terreno entre os que o
+   * serviço de terreno libera para o horário atual.
+   */
   public BatalhaService(
       Treinador treinadorJogador, Treinador treinadorCpu, GeradorAleatorio gerador,
       CalculadoraDano calculadora, Iniciativa iniciativa,
-      EscolhaDeAcao escolhaJogador, EscolhaDeAcao escolhaCpu, RegistroBatalha registro) {
+      EscolhaDeAcao escolhaJogador, EscolhaDeAcao escolhaCpu, RegistroBatalha registro,
+      RepositorioResultados repo, ServicoTerreno servicoTerreno) {
     this.treinadorJogador = treinadorJogador;
     this.treinadorCpu = treinadorCpu;
     this.pokesalJogador = treinadorJogador.criarPokesal();
@@ -42,8 +54,9 @@ public class BatalhaService {
     this.escolhaJogador = escolhaJogador;
     this.escolhaCpu = escolhaCpu;
     this.registro = registro;
-    Terreno[] terrenos = Terreno.values();
-    this.terrenoAtual = terrenos[gerador.proximoInteiro(terrenos.length)];
+    this.repo = repo;
+    List<Terreno> terrenos = servicoTerreno.terrenosDisponiveis();
+    this.terrenoAtual = terrenos.get(gerador.proximoInteiro(terrenos.size()));
   }
 
   /** Sorteia se o golpe será um acerto crítico. */
@@ -51,16 +64,58 @@ public class BatalhaService {
     return gerador.proximoDecimal() < CHANCE_CRITICO;
   }
 
-  /** Executa um ataque, aplica o dano e sorteia a condição de status do defensor. */
+  /** Sorteia se o golpe acerta o alvo, com chance igual à sua precisão (0 a 100). */
+  public boolean sortearAcerto(Golpe golpe) {
+    return gerador.proximoInteiro(PORCENTAGEM_MAXIMA) < golpe.getPrecisao();
+  }
+
+  /** Sorteia se o defensor bloqueia o golpe e contra-ataca na hora. */
+  public boolean sortearContraAtaque() {
+    return gerador.proximoDecimal() < CHANCE_CONTRA_ATAQUE;
+  }
+
+  /**
+   * Calcula o dano do contra-ataque: 50% do dano que o golpe do atacante causaria no defensor,
+   * descartando a parte decimal. O resultado nunca é menor que o dano mínimo.
+   */
+  public int calcularDanoContraAtaque(Pokesal atacante, Pokesal defensor) {
+    int danoQueReceberia = calcularDano(atacante, defensor, false);
+    int danoContraAtaque = (int) (danoQueReceberia * FRACAO_CONTRA_ATAQUE);
+    return Math.max(DANO_MINIMO, danoContraAtaque);
+  }
+
+  public Terreno getTerrenoAtual() {
+    return terrenoAtual;
+  }
+
+  private int calcularDano(Pokesal atacante, Pokesal defensor, boolean critico) {
+    return calculadora.calcular(atacante, defensor, terrenoAtual, critico);
+  }
+
+  /**
+   * Executa um ataque: sorteia o acerto pela precisão do golpe. Se acertar, o defensor ainda pode
+   * bloquear e contra-atacar; senão o dano é aplicado e a condição de status é sorteada. Um golpe
+   * que erra causa dano zero.
+   */
   public void atacar(Pokesal atacante, Pokesal defensor) {
     registro.ataque(nomeComDono(atacante), nomeComDono(defensor));
+
+    if (!sortearAcerto(atacante.getGolpe())) {
+      registro.golpeErrou(nomeComDono(atacante), nomeComDono(defensor));
+      return;
+    }
+
+    if (sortearContraAtaque()) {
+      contraAtacar(defensor, atacante);
+      return;
+    }
 
     boolean critico = sortearCritico();
     if (critico) {
       registro.acertoCritico();
     }
 
-    int dano = calculadora.calcular(atacante, defensor, terrenoAtual, critico);
+    int dano = calcularDano(atacante, defensor, critico);
     int danoSofrido = defensor.receberDano(dano);
     registro.dano(
             nomeComDono(defensor), danoSofrido, defensor.getHpAtual(), defensor.getHpMax());
@@ -74,6 +129,19 @@ public class BatalhaService {
     }
   }
 
+  private void contraAtacar(Pokesal defensor, Pokesal atacante) {
+    registro.contraAtaque(nomeComDono(defensor), nomeComDono(atacante));
+
+    int dano = calcularDanoContraAtaque(atacante, defensor);
+    int danoSofrido = atacante.receberDano(dano);
+    registro.dano(
+        nomeComDono(atacante), danoSofrido, atacante.getHpAtual(), atacante.getHpMax());
+
+    if (atacante.estaDerrotado()) {
+      registro.derrotado(nomeComDono(atacante));
+    }
+  }
+
   private void tentarAplicarStatus(Pokesal atacante, Pokesal defensor) {
     if (defensor.getStatus() != Status.NORMAL
         || gerador.proximoDecimal() >= CHANCE_STATUS) {
@@ -81,13 +149,13 @@ public class BatalhaService {
     }
     if (atacante.getTipoElemental() == TipoElemental.FOGO) {
       defensor.setStatus(Status.QUEIMADO);
-      registro.efeitoStatus(nomeComDono(defensor) + " foi queimado!");
+      registro.efeitoStatus(nomeComDono(defensor) + " foi queimado!\n");
     } else if (atacante.getTipoElemental() == TipoElemental.PLANTA) {
       defensor.setStatus(Status.ENVENENADO);
-      registro.efeitoStatus(nomeComDono(defensor) + " foi envenenado!");
+      registro.efeitoStatus(nomeComDono(defensor) + " foi envenenado!\n");
     } else {
       defensor.setStatus(Status.PARALISADO);
-      registro.efeitoStatus(nomeComDono(defensor) + " foi paralisado!");
+      registro.efeitoStatus(nomeComDono(defensor) + " foi paralisado!\n");
     }
   }
 
@@ -123,7 +191,7 @@ public class BatalhaService {
 
       pokesal.receberDano(danoStatus);
       registro.efeitoStatus(nomeComDono(pokesal) + " sofreu " + danoStatus
-          + " de dano devido ao status " + statusAtual + "!");
+          + " de dano devido ao status " + statusAtual + "!\n");
     }
 
     if (statusAtual != Status.NORMAL) {
@@ -131,7 +199,7 @@ public class BatalhaService {
       if (statusAtual.expira()
           && pokesal.getTurnosComStatus() >= statusAtual.getDuracaoTurnos()) {
         pokesal.setStatus(Status.NORMAL);
-        registro.efeitoStatus(nomeComDono(pokesal) + " se recuperou de " + statusAtual + "!");
+        registro.efeitoStatus(nomeComDono(pokesal) + " se recuperou de " + statusAtual + "!\n");
       }
     }
 
@@ -145,15 +213,14 @@ public class BatalhaService {
       int curado = pokesal.curar((int) (pokesal.getHpMax() * percentualCura));
       if (curado > 0) {
         registro.efeitoTerreno(
-            nomeComDono(pokesal) + " recuperou " + curado + " de HP pelo terreno!");
+            nomeComDono(pokesal) + " recuperou " + curado + " de HP pelo terreno!\n");
       }
     }
-
     registro.fimDeTurno(nomeComDono(pokesal), pokesal.getHpAtual(), pokesal.getHpMax());
   }
 
-  /** Roda as rodadas até alguém ser derrotado e devolve o treinador vencedor. */
-  public Treinador iniciarBatalha() {
+  /** Roda as rodadas até alguém ser derrotado e devolve o resultado da batalha. */
+  public ResultadoBatalha iniciarBatalha() {
     treinadorJogador.getMochila().resetarUsoBatalha();
     treinadorCpu.getMochila().resetarUsoBatalha();
 
@@ -161,8 +228,9 @@ public class BatalhaService {
         nomeComDono(pokesalJogador) + " contra " + nomeComDono(pokesalCpu),
         terrenoAtual.toString());
 
-    int rodada = 1;
+    int rodada = 0;
     while (!pokesalJogador.estaDerrotado() && !pokesalCpu.estaDerrotado()) {
+      rodada++;
       registro.inicioRodada(rodada);
 
       boolean jogadorComeca = iniciativa.primeiroAtacaAntes(pokesalJogador, pokesalCpu);
@@ -188,13 +256,30 @@ public class BatalhaService {
 
       processarFimDeTurno(pokesalJogador);
       processarFimDeTurno(pokesalCpu);
-      rodada++;
     }
 
-    if (pokesalJogador.estaDerrotado()) {
-      return treinadorCpu;
+    boolean jogadorVenceu = !pokesalJogador.estaDerrotado();
+    ResultadoBatalha resultado = montarResultado(jogadorVenceu, rodada);
+    salvarResultado(resultado);
+    return resultado;
+  }
+
+  private ResultadoBatalha montarResultado(boolean jogadorVenceu, int rodadas) {
+    Treinador vencedor = jogadorVenceu ? treinadorJogador : treinadorCpu;
+    Treinador perdedor = jogadorVenceu ? treinadorCpu : treinadorJogador;
+    Pokesal pokesalVencedor = jogadorVenceu ? pokesalJogador : pokesalCpu;
+    Pokesal pokesalPerdedor = jogadorVenceu ? pokesalCpu : pokesalJogador;
+
+    return new ResultadoBatalha(vencedor.getNome(), perdedor.getNome(), rodadas,
+        pokesalVencedor.getNomeP(), pokesalPerdedor.getNomeP());
+  }
+
+  private void salvarResultado(ResultadoBatalha resultado) {
+    try {
+      repo.salvar(resultado);
+    } catch (RuntimeException e) {
+      registro.erro("Falha ao salvar o resultado da batalha: " + e.getMessage());
     }
-    return treinadorJogador;
   }
 
   private String nomeComDono(Pokesal pokesal) {
