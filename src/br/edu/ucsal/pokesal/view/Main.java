@@ -19,7 +19,10 @@ import br.edu.ucsal.pokesal.service.Iniciativa;
 import br.edu.ucsal.pokesal.service.RecompensaService;
 import br.edu.ucsal.pokesal.service.RegistroSilencioso;
 import br.edu.ucsal.pokesal.service.ServicoConquistas;
+import br.edu.ucsal.pokesal.service.ServicoTerreno;
+import br.edu.ucsal.pokesal.service.ServicoTerrenoPadrao;
 import br.edu.ucsal.pokesal.service.Torneio;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -46,6 +49,7 @@ public class Main {
     RecompensaService recompensas = new RecompensaService(gerador);
     ServicoConquistas conquistas = new ServicoConquistas(new ConsoleNotificador());
     RepositorioResultados repo = new RepositorioResultadosMemoria();
+    ServicoTerreno terreno = new ServicoTerrenoPadrao(Clock.systemDefaultZone());
     int opcao;
 
     System.out.println("--- Bem-vindo ao PokéSal ---");
@@ -65,10 +69,10 @@ public class Main {
 
       switch (opcao) {
         case OPCAO_BATALHA:
-          jogarNormal(jogador, gerador, scanner, historico, recompensas, conquistas, repo);
+          jogarNormal(jogador, gerador, scanner, historico, recompensas, conquistas, repo, terreno);
           break;
         case OPCAO_TORNEIO:
-          jogarTorneio(jogador, gerador, scanner, historico, recompensas, repo);
+          jogarTorneio(jogador, gerador, scanner, historico, recompensas, repo, terreno);
           break;
         case OPCAO_MOCHILA:
           verMochila(jogador);
@@ -91,19 +95,20 @@ public class Main {
 
   private static void jogarNormal(Treinador jogador, GeradorAleatorio gerador, Scanner scanner,
       Historico historico, RecompensaService recompensas, ServicoConquistas conquistas,
-      RepositorioResultados repo) {
+      RepositorioResultados repo, ServicoTerreno terreno) {
     Treinador cpu = criarCpu("CPU", gerador);
 
     BatalhaService batalha = new BatalhaService(jogador, cpu, gerador,
         new CalculadoraDano(), new Iniciativa(gerador),
-        new ConsoleEscolha(scanner), new CpuEscolha(), new ConsoleRegistro(), repo);
+        new ConsoleEscolha(scanner), new CpuEscolha(), new ConsoleRegistro(),
+        repo, terreno);
     ResultadoBatalha resultado = batalha.iniciarBatalha();
 
     if (resultado.venceu(jogador.getNome())) {
       System.out.println("\nVocê venceu a batalha!");
       Itens recompensa = recompensas.concederRecompensa(jogador);
       System.out.println("Recompensa obtida: " + recompensa.getNome()
-          + " adicionado à mochila!");
+            + " adicionado à mochila!");
       conquistas.registrarVitoria(historico);
     } else {
       System.out.println("\nA CPU venceu a batalha!");
@@ -113,7 +118,7 @@ public class Main {
 
   private static void jogarTorneio(Treinador jogador, GeradorAleatorio gerador,
       Scanner scanner, Historico historico, RecompensaService recompensas,
-      RepositorioResultados repo) {
+      RepositorioResultados repo, ServicoTerreno terreno) {
     System.out.println("\nTamanho do torneio (" + TORNEIO_PEQUENO + " ou " + TORNEIO_GRANDE + ")");
     int tamanho = lerTamanhoTorneio(scanner);
 
@@ -126,7 +131,7 @@ public class Main {
 
     FabricaDeBatalhaTorneio fabrica = new FabricaDeBatalhaTorneio(jogadorTorneio,
         new ConsoleEscolha(scanner), gerador, new ConsoleRegistro(),
-        new RegistroSilencioso(), repo);
+        new RegistroSilencioso(), repo, terreno);
     ResultadoTorneio resultado = new Torneio(participantes, fabrica,
         new ConsoleAvisoTorneio()).disputar();
 

@@ -15,17 +15,20 @@ public class FabricaDeBatalhaTorneio implements FabricaDeBatalha {
   private final RegistroBatalha registroJogador;
   private final RegistroBatalha registroSilencioso;
   private final RepositorioResultados repositorio;
+  private final ServicoTerreno terreno;
 
   /** Cria a fábrica com os colaboradores usados em cada batalha. */
   public FabricaDeBatalhaTorneio(Treinador jogador, EscolhaDeAcao escolhaJogador,
         GeradorAleatorio gerador, RegistroBatalha registroJogador,
-        RegistroBatalha registroSilencioso, RepositorioResultados repositorio) {
+        RegistroBatalha registroSilencioso, RepositorioResultados repositorio,
+        ServicoTerreno terreno) {
     this.jogador = jogador;
     this.escolhaJogador = escolhaJogador;
     this.gerador = gerador;
     this.registroJogador = registroJogador;
     this.registroSilencioso = registroSilencioso;
     this.repositorio = repositorio;
+    this.terreno = terreno;
   }
 
   @Override
@@ -36,7 +39,7 @@ public class FabricaDeBatalhaTorneio implements FabricaDeBatalha {
     EscolhaDeAcao escolhaSegundo = segundo == jogador ? escolhaJogador : new CpuEscolha();
 
     BatalhaService batalha = new BatalhaService(primeiro, segundo, gerador, new CalculadoraDano(),
-        new Iniciativa(gerador), escolhaPrimeiro, escolhaSegundo, registro, repositorio);
+        new Iniciativa(gerador), escolhaPrimeiro, escolhaSegundo, registro, repositorio, terreno);
     return batalha.iniciarBatalha();
   }
 }

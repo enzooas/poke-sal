@@ -30,6 +30,16 @@ public class RegistroSilencioso implements RegistroBatalha {
   }
 
   @Override
+  public void golpeErrou(String atacante, String defensor) {
+  // no-op
+  }
+
+  @Override
+  public void contraAtaque(String defensor, String atacante) {
+  // no-op
+  }
+
+  @Override
   public void acertoCritico() {
   // no-op
   }

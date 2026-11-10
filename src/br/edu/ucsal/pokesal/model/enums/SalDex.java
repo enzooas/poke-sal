@@ -1,13 +1,15 @@
 package br.edu.ucsal.pokesal.model.enums;
 
-/** Catálogo com os atributos base de cada PokéSal disponível para escolha. */
+import br.edu.ucsal.pokesal.model.Golpe;
+
+/** Catálogo com os atributos base e o golpe de cada PokéSal disponível para escolha. */
 public enum SalDex {
-  BULBASAL("BulbaSal", TipoElemental.PLANTA, 45, 49, 49, 45),
-  CHARSAL("CharSal", TipoElemental.FOGO, 39, 52, 43, 65),
-  SQUIRTSAL("SquirtSal", TipoElemental.AGUA, 44, 48, 65, 43),
-  CHIKOSAL("ChikoSal", TipoElemental.PLANTA, 45, 49, 65, 45),
-  CYNDASAL("CyndaSal", TipoElemental.FOGO, 39, 52, 43, 65),
-  TOTOSAL("TotoSal", TipoElemental.AGUA, 50, 65, 64, 43);
+  BULBASAL("BulbaSal", TipoElemental.PLANTA, 45, 49, 49, 45, new Golpe(95)),
+  CHARSAL("CharSal", TipoElemental.FOGO, 39, 52, 43, 65, new Golpe(90)),
+  SQUIRTSAL("SquirtSal", TipoElemental.AGUA, 44, 48, 65, 43, new Golpe(95)),
+  CHIKOSAL("ChikoSal", TipoElemental.PLANTA, 45, 49, 65, 45, new Golpe(90)),
+  CYNDASAL("CyndaSal", TipoElemental.FOGO, 39, 52, 43, 65, new Golpe(85)),
+  TOTOSAL("TotoSal", TipoElemental.AGUA, 50, 65, 64, 43, new Golpe(80));
 
   private final String nome;
   private final TipoElemental tipoElemental;
@@ -15,14 +17,17 @@ public enum SalDex {
   private final int atk;
   private final int def;
   private final int spd;
+  private final Golpe golpe;
 
-  SalDex(String nome, TipoElemental tipoElemental, int hpMax, int atk, int def, int spd) {
+  SalDex(String nome, TipoElemental tipoElemental, int hpMax, int atk, int def, int spd,
+      Golpe golpe) {
     this.nome = nome;
     this.tipoElemental = tipoElemental;
     this.hpMax = hpMax;
     this.atk = atk;
     this.def = def;
     this.spd = spd;
+    this.golpe = golpe;
   }
 
   public String getNome() {
@@ -47,5 +52,9 @@ public enum SalDex {
 
   public int getSpd() {
     return spd;
+  }
+
+  public Golpe getGolpe() {
+    return golpe;
   }
 }
