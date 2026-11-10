@@ -2,15 +2,14 @@ package br.edu.ucsal.pokesal.service;
 
 import br.edu.ucsal.pokesal.model.Historico;
 import br.edu.ucsal.pokesal.model.enums.Conquista;
-import java.util.EnumSet;
-import java.util.Optional;
+import java.util.HashSet;
 import java.util.Set;
 
 /** Atualiza o histórico do modo normal e concede conquistas por sequência de vitórias. */
 public class ServicoConquistas {
 
   private final NotificadorConquista notificador;
-  private final Set<Conquista> conquistasObtidas = EnumSet.noneOf(Conquista.class);
+  private final Set<Conquista> conquistasObtidas = new HashSet<>();
 
   /** Cria o serviço com o notificador que será avisado quando uma meta for atingida. */
   public ServicoConquistas(NotificadorConquista notificador) {
@@ -24,9 +23,10 @@ public class ServicoConquistas {
   public void registrarVitoria(Historico historico) {
     historico.registrarVitoriaNormal();
     int sequencia = historico.getSequenciaAtual();
-    Optional<Conquista> conquista = Conquista.daSequencia(sequencia);
-    if (conquista.isPresent() && conquistasObtidas.add(conquista.get())) {
-      notificador.conquistaObtida(conquista.get(), sequencia);
+    Conquista conquista = Conquista.daSequencia(sequencia);
+    if (conquista != null && !conquistasObtidas.contains(conquista)) {
+      conquistasObtidas.add(conquista);
+      notificador.conquistaObtida(conquista, sequencia);
     }
   }
 

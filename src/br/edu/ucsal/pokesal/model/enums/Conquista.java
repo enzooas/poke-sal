@@ -1,7 +1,5 @@
 package br.edu.ucsal.pokesal.model.enums;
 
-import java.util.Optional;
-
 /** Títulos concedidos ao jogador por sequências de vitórias seguidas no modo normal. */
 public enum Conquista {
   TREINADOR_EXEMPLAR(3, "Treinador Exemplar"),
@@ -25,12 +23,12 @@ public enum Conquista {
   }
 
   /** Procura a conquista cuja meta é exatamente a sequência informada.  */
-  public static Optional<Conquista> daSequencia(int sequencia) {
+  public static Conquista daSequencia(int sequencia) {
     for (Conquista conquista : values()) {
       if (conquista.vitoriasNecessarias == sequencia) {
-        return Optional.of(conquista);
+        return conquista;
       }
     }
-    return Optional.empty();
+    return null;
   }
 }
