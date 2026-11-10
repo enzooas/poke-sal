@@ -12,6 +12,8 @@
 
 # Package Files #
 *.jar
+# Mockito e dependencias, usados pelos testes (o projeto nao tem Maven nem Gradle)
+!lib/*.jar
 *.war
 *.nar
 *.ear
