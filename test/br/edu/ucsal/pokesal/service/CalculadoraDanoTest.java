@@ -1,8 +1,8 @@
 package br.edu.ucsal.pokesal.service;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import br.edu.ucsal.pokesal.model.Pokesal;
 import br.edu.ucsal.pokesal.model.enums.SalDex;

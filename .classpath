@@ -12,5 +12,10 @@
 	<classpathentry kind="lib" path="lib/byte-buddy-agent-1.18.17.jar"/>
 	<classpathentry kind="lib" path="lib/mockito-core-5.24.0.jar"/>
 	<classpathentry kind="lib" path="lib/mockito-junit-jupiter-5.24.0.jar"/>
+	<classpathentry kind="lib" path="lib/mockito-core-5.17.0.jar"/>
+	<classpathentry kind="lib" path="lib/mockito-junit-jupiter-5.17.0.jar"/>
+	<classpathentry kind="lib" path="lib/byte-buddy-1.17.8.jar"/>
+	<classpathentry kind="lib" path="lib/byte-buddy-agent-1.17.8.jar"/>
+	<classpathentry kind="lib" path="lib/objenesis-3.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
