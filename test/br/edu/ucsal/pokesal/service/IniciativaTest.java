@@ -36,4 +36,15 @@ public class IniciativaTest {
         () -> assertTrue(iniciativa.primeiroAtacaAntes(rapido, lento)),
         () -> assertFalse(iniciativa.primeiroAtacaAntes(lento, rapido)));
   }
+  
+  @Test
+  public void testHaEmpateApenasComMesmaVelocidade() {
+    Iniciativa iniciativa = new Iniciativa(sorteioFixo(0));
+
+    assertAll(
+        () -> assertTrue(iniciativa.haEmpate(
+            new Pokesal(SalDex.CHARSAL), new Pokesal(SalDex.CYNDASAL))),
+        () -> assertFalse(iniciativa.haEmpate(
+            new Pokesal(SalDex.CHARSAL), new Pokesal(SalDex.BULBASAL))));
+  }
 }
