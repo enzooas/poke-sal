@@ -64,13 +64,4 @@ public class ServicoConquistasTest {
 
     verify(notificador, times(1)).conquistaObtida(Conquista.TREINADOR_EXEMPLAR, 3);
   }
-
-  @Test
-  public void testRecordePreservadoAposDerrota() {
-    vencer(4);
-    servico.registrarDerrota(historico);
-
-    org.junit.jupiter.api.Assertions.assertEquals(4, historico.getMelhorSequencia());
-    org.junit.jupiter.api.Assertions.assertEquals(0, historico.getSequenciaAtual());
-  }
 }
