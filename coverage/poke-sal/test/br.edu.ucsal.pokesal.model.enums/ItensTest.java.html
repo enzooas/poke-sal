@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>ItensTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.model.enums</a> &gt; <span class="el_source">ItensTest.java</span></div><h1>ItensTest.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.model.enums;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import br.edu.ucsal.pokesal.model.Pokesal;
+import org.junit.jupiter.api.Test;
+
+/** Testes das regras de uso e efeito dos itens de batalha. */
+<span class="fc" id="L12">public class ItensTest {</span>
+
+  private static final int DANO_PEQUENO = 10;
+
+  @Test
+  public void testPotionNaoPodeSerUsadaComHpCheio() {
+<span class="fc" id="L18">    Pokesal pokesal = new Pokesal(SalDex.BULBASAL);</span>
+
+<span class="fc" id="L20">    assertFalse(Itens.POTION.podeUsarEm(pokesal));</span>
+<span class="fc" id="L21">    assertFalse(Itens.SUPERPOTION.podeUsarEm(pokesal));</span>
+<span class="fc" id="L22">  }</span>
+
+  @Test
+  public void testPotionPodeSerUsadaComHpAbaixoDoMaximo() {
+<span class="fc" id="L26">    Pokesal pokesal = new Pokesal(SalDex.BULBASAL);</span>
+<span class="fc" id="L27">    pokesal.receberDano(DANO_PEQUENO);</span>
+
+<span class="fc" id="L29">    assertAll(</span>
+<span class="fc" id="L30">        () -&gt; assertTrue(Itens.POTION.podeUsarEm(pokesal)),</span>
+<span class="fc" id="L31">        () -&gt; assertTrue(Itens.SUPERPOTION.podeUsarEm(pokesal)));</span>
+<span class="fc" id="L32">  }</span>
+
+  @Test
+  public void testAntidoteSoPodeSerUsadoComEnvenenado() {
+<span class="fc" id="L36">    Pokesal pokesal = new Pokesal(SalDex.BULBASAL);</span>
+<span class="fc" id="L37">    assertFalse(Itens.ANTIDOTE.podeUsarEm(pokesal));</span>
+
+<span class="fc" id="L39">    pokesal.setStatus(Status.QUEIMADO);</span>
+<span class="fc" id="L40">    assertFalse(Itens.ANTIDOTE.podeUsarEm(pokesal));</span>
+
+<span class="fc" id="L42">    pokesal.setStatus(Status.ENVENENADO);</span>
+<span class="fc" id="L43">    assertTrue(Itens.ANTIDOTE.podeUsarEm(pokesal));</span>
+<span class="fc" id="L44">  }</span>
+
+  @Test
+  public void testPotionCuraSemUltrapassarHpMaximo() {
+<span class="fc" id="L48">    Pokesal pokesal = new Pokesal(SalDex.BULBASAL);</span>
+<span class="fc" id="L49">    pokesal.receberDano(DANO_PEQUENO);</span>
+
+<span class="fc" id="L51">    String mensagem = Itens.POTION.aplicarEm(pokesal);</span>
+
+<span class="fc" id="L53">    assertEquals(pokesal.getHpMax(), pokesal.getHpAtual());</span>
+<span class="fc" id="L54">    assertTrue(mensagem.contains(&quot;recuperou &quot; + DANO_PEQUENO + &quot; de HP&quot;));</span>
+<span class="fc" id="L55">  }</span>
+
+  @Test
+  public void testSuperPotionCuraMaisQuePotion() {
+<span class="fc" id="L59">    Pokesal comPotion = new Pokesal(SalDex.TOTOSAL);</span>
+<span class="fc" id="L60">    Pokesal comSuper = new Pokesal(SalDex.TOTOSAL);</span>
+<span class="fc" id="L61">    comPotion.receberDano(comPotion.getHpMax() - 1);</span>
+<span class="fc" id="L62">    comSuper.receberDano(comSuper.getHpMax() - 1);</span>
+
+<span class="fc" id="L64">    Itens.POTION.aplicarEm(comPotion);</span>
+<span class="fc" id="L65">    Itens.SUPERPOTION.aplicarEm(comSuper);</span>
+
+<span class="fc" id="L67">    assertAll(</span>
+<span class="fc" id="L68">        () -&gt; assertEquals(1 + Itens.POTION.getValorCura(), comPotion.getHpAtual()),</span>
+<span class="fc" id="L69">        () -&gt; assertEquals(comSuper.getHpMax(), comSuper.getHpAtual()));</span>
+<span class="fc" id="L70">  }</span>
+
+  @Test
+  public void testAntidoteVoltaStatusParaNormal() {
+<span class="fc" id="L74">    Pokesal pokesal = new Pokesal(SalDex.BULBASAL);</span>
+<span class="fc" id="L75">    pokesal.setStatus(Status.ENVENENADO);</span>
+
+<span class="fc" id="L77">    String mensagem = Itens.ANTIDOTE.aplicarEm(pokesal);</span>
+
+<span class="fc" id="L79">    assertEquals(Status.NORMAL, pokesal.getStatus());</span>
+<span class="fc" id="L80">    assertTrue(mensagem.contains(&quot;curado&quot;));</span>
+<span class="fc" id="L81">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>

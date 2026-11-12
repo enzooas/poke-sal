@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>BatalhaServiceTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.service</a> &gt; <span class="el_source">BatalhaServiceTest.java</span></div><h1>BatalhaServiceTest.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.service;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import br.edu.ucsal.pokesal.model.Acao;
+import br.edu.ucsal.pokesal.model.Mochila;
+import br.edu.ucsal.pokesal.model.Pokesal;
+import br.edu.ucsal.pokesal.model.ResultadoBatalha;
+import br.edu.ucsal.pokesal.model.Treinador;
+import br.edu.ucsal.pokesal.model.enums.Itens;
+import br.edu.ucsal.pokesal.model.enums.SalDex;
+import br.edu.ucsal.pokesal.model.enums.Terreno;
+import br.edu.ucsal.pokesal.repository.RepositorioResultados;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+/**
+ * Testes da BatalhaService isolada de todos os colaboradores.
+ *
+ * &lt;p&gt;Matchers (any, anyInt, anyString) são usados quando o valor do argumento não é o objeto do
+ * teste (por exemplo, qual Pokésal é passado à calculadora). Valores exatos (eq implícito) são
+ * usados quando o argumento É o que se quer provar (nomes e HP nos eventos, dados do resultado).
+ */
+@ExtendWith(MockitoExtension.class)
+<span class="fc" id="L44">public class BatalhaServiceTest {</span>
+
+  @Mock
+  private GeradorAleatorio gerador;
+  @Mock
+  private CalculadoraDano calculadora;
+  @Mock
+  private Iniciativa iniciativa;
+  @Mock
+  private EscolhaDeAcao escolhaJogador;
+  @Mock
+  private EscolhaDeAcao escolhaCpu;
+  @Mock
+  private RegistroBatalha registro;
+  @Mock
+  private RepositorioResultados repositorio;
+  @Mock
+  private ServicoTerreno servicoTerreno;
+
+  private Treinador treinador(String nome, SalDex salDex, Itens... itens) {
+<span class="fc" id="L64">    return new Treinador(nome, salDex, new Mochila(new ArrayList&lt;&gt;(List.of(itens))));</span>
+  }
+
+  /** Monta a batalha com terreno fixo; o sorteio do terreno e o do acerto sempre dão 0. */
+  private BatalhaService criarBatalha(Treinador jogador, Treinador cpu, Terreno terreno) {
+<span class="fc" id="L69">    when(servicoTerreno.terrenosDisponiveis()).thenReturn(List.of(terreno));</span>
+<span class="fc" id="L70">    when(gerador.proximoInteiro(anyInt())).thenReturn(0);</span>
+<span class="fc" id="L71">    return new BatalhaService(jogador, cpu, gerador, calculadora, iniciativa,</span>
+<span class="fc" id="L72">        escolhaJogador, escolhaCpu, registro, repositorio, servicoTerreno);</span>
+  }
+
+  /**
+   * Batalha em que o jogador (CharSal) vence a CPU (BulbaSal) em 2 rodadas: dano 10, 10 e 100,
+   * sem crítico, contra-ataque nem status.
+   */
+  private BatalhaService criarBatalhaVencidaPeloJogador() {
+<span class="fc" id="L80">    final BatalhaService batalha = criarBatalha(</span>
+<span class="fc" id="L81">        treinador(&quot;Jogador&quot;, SalDex.CHARSAL), treinador(&quot;CPU&quot;, SalDex.BULBASAL),</span>
+<span class="fc" id="L82">        Terreno.POCA_CHUVA);</span>
+<span class="fc" id="L83">    when(iniciativa.primeiroAtacaAntes(any(Pokesal.class), any(Pokesal.class))).thenReturn(true);</span>
+<span class="fc" id="L84">    when(escolhaJogador.escolher(any(Treinador.class), any(Pokesal.class)))</span>
+<span class="fc" id="L85">        .thenReturn(Acao.atacar());</span>
+<span class="fc" id="L86">    when(escolhaCpu.escolher(any(Treinador.class), any(Pokesal.class)))</span>
+<span class="fc" id="L87">        .thenReturn(Acao.atacar());</span>
+<span class="fc" id="L88">    when(calculadora.calcular(any(Pokesal.class), any(Pokesal.class), any(Terreno.class),</span>
+<span class="fc" id="L89">        anyBoolean())).thenReturn(10, 10, 100);</span>
+<span class="fc" id="L90">    when(gerador.proximoDecimal()).thenReturn(0.5);</span>
+<span class="fc" id="L91">    return batalha;</span>
+  }
+
+  @Test
+  public void testSequenciaDeEventosNoTurno() {
+<span class="fc" id="L96">    Treinador jogador = treinador(&quot;Jogador&quot;, SalDex.CHARSAL);</span>
+<span class="fc" id="L97">    Treinador cpu = treinador(&quot;CPU&quot;, SalDex.BULBASAL, Itens.POTION);</span>
+<span class="fc" id="L98">    final BatalhaService batalha = criarBatalha(jogador, cpu, Terreno.CANTEIRO_CENTRAL);</span>
+
+    // Sequências: rodada 1 o jogador começa; na rodada 2 a CPU começa e usa Potion.
+<span class="fc" id="L101">    when(iniciativa.primeiroAtacaAntes(any(Pokesal.class), any(Pokesal.class)))</span>
+<span class="fc" id="L102">        .thenReturn(true, false);</span>
+<span class="fc" id="L103">    when(escolhaJogador.escolher(any(Treinador.class), any(Pokesal.class)))</span>
+<span class="fc" id="L104">        .thenReturn(Acao.atacar());</span>
+<span class="fc" id="L105">    when(escolhaCpu.escolher(any(Treinador.class), any(Pokesal.class)))</span>
+<span class="fc" id="L106">        .thenReturn(Acao.atacar(), Acao.usarItem(Itens.POTION));</span>
+<span class="fc" id="L107">    when(calculadora.calcular(any(Pokesal.class), any(Pokesal.class), any(Terreno.class),</span>
+<span class="fc" id="L108">        anyBoolean())).thenReturn(5, 5, 100);</span>
+    // Ordem dos sorteios: contra-ataque, crítico, status. Só o 3º (status) é sorteado como 0,1.
+<span class="fc" id="L110">    when(gerador.proximoDecimal()).thenReturn(0.5, 0.5, 0.1, 0.5);</span>
+
+<span class="fc" id="L112">    batalha.iniciarBatalha();</span>
+
+<span class="fc" id="L114">    InOrder ordem = inOrder(registro);</span>
+<span class="fc" id="L115">    ordem.verify(registro).ataque(&quot;CharSal (Jogador)&quot;, &quot;BulbaSal (CPU)&quot;);</span>
+<span class="fc" id="L116">    ordem.verify(registro).dano(&quot;BulbaSal (CPU)&quot;, 5, 40, 45);</span>
+<span class="fc" id="L117">    ordem.verify(registro).efeitoStatus(&quot;BulbaSal (CPU) foi queimado!&quot;);</span>
+<span class="fc" id="L118">    ordem.verify(registro).efeitoTerreno(anyString());</span>
+<span class="fc" id="L119">    ordem.verify(registro).usoItem(anyString());</span>
+<span class="fc" id="L120">    verify(registro, atLeastOnce()).fimDeTurno(anyString(), anyInt(), anyInt());</span>
+<span class="fc" id="L121">  }</span>
+
+  @Test
+  public void testResultadoSalvoAoFimDaBatalha() {
+<span class="fc" id="L125">    BatalhaService batalha = criarBatalhaVencidaPeloJogador();</span>
+
+<span class="fc" id="L127">    final ResultadoBatalha devolvido = batalha.iniciarBatalha();</span>
+
+<span class="fc" id="L129">    ArgumentCaptor&lt;ResultadoBatalha&gt; captor = ArgumentCaptor.forClass(ResultadoBatalha.class);</span>
+<span class="fc" id="L130">    verify(repositorio, times(1)).salvar(captor.capture());</span>
+<span class="fc" id="L131">    ResultadoBatalha salvo = captor.getValue();</span>
+<span class="fc" id="L132">    assertEquals(&quot;Jogador&quot;, salvo.getVencedor());</span>
+<span class="fc" id="L133">    assertEquals(&quot;CPU&quot;, salvo.getPerdedor());</span>
+<span class="fc" id="L134">    assertEquals(2, salvo.getTurnos());</span>
+<span class="fc" id="L135">    assertEquals(&quot;CharSal&quot;, salvo.getPokesalVencedor());</span>
+<span class="fc" id="L136">    assertEquals(&quot;BulbaSal&quot;, salvo.getPokesalPerdedor());</span>
+<span class="fc" id="L137">    assertEquals(salvo, devolvido);</span>
+<span class="fc" id="L138">    verify(registro, times(2)).inicioRodada(anyInt());</span>
+<span class="fc" id="L139">  }</span>
+
+  @Test
+  public void testFalhaNoRepositorioNaoInvalidaBatalha() {
+<span class="fc" id="L143">    BatalhaService batalha = criarBatalhaVencidaPeloJogador();</span>
+<span class="fc" id="L144">    doThrow(new IllegalStateException(&quot;disco cheio&quot;))</span>
+<span class="fc" id="L145">        .when(repositorio).salvar(any(ResultadoBatalha.class));</span>
+
+<span class="fc" id="L147">    ResultadoBatalha resultado = batalha.iniciarBatalha();</span>
+
+<span class="fc" id="L149">    assertTrue(resultado.venceu(&quot;Jogador&quot;));</span>
+<span class="fc" id="L150">    verify(registro).erro(&quot;Falha ao salvar o resultado da batalha: disco cheio&quot;);</span>
+<span class="fc" id="L151">  }</span>
+
+  @Test
+  public void testRepositorioNaoChamadoSeBatalhaNaoTerminou() {
+<span class="fc" id="L155">    BatalhaService batalha = criarBatalha(</span>
+<span class="fc" id="L156">        treinador(&quot;Jogador&quot;, SalDex.CHARSAL), treinador(&quot;CPU&quot;, SalDex.BULBASAL),</span>
+<span class="fc" id="L157">        Terreno.POCA_CHUVA);</span>
+<span class="fc" id="L158">    when(iniciativa.primeiroAtacaAntes(any(Pokesal.class), any(Pokesal.class))).thenReturn(true);</span>
+<span class="fc" id="L159">    when(escolhaJogador.escolher(any(Treinador.class), any(Pokesal.class)))</span>
+<span class="fc" id="L160">        .thenThrow(new IllegalStateException(&quot;entrada encerrada&quot;));</span>
+
+<span class="fc" id="L162">    assertThrows(IllegalStateException.class, batalha::iniciarBatalha);</span>
+
+<span class="fc" id="L164">    verify(repositorio, never()).salvar(any(ResultadoBatalha.class));</span>
+<span class="fc" id="L165">    verify(registro, never()).erro(anyString());</span>
+<span class="fc" id="L166">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>

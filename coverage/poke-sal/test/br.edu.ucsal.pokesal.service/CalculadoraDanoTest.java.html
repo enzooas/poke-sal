@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>CalculadoraDanoTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.service</a> &gt; <span class="el_source">CalculadoraDanoTest.java</span></div><h1>CalculadoraDanoTest.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.service;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import br.edu.ucsal.pokesal.model.Pokesal;
+import br.edu.ucsal.pokesal.model.enums.SalDex;
+import br.edu.ucsal.pokesal.model.enums.Terreno;
+import org.junit.jupiter.api.Test;
+
+/** Testes do cálculo de dano, com terreno e crítico informados diretamente. */
+<span class="fc" id="L13">public class CalculadoraDanoTest {</span>
+
+<span class="fc" id="L15">  private final CalculadoraDano calculadora = new CalculadoraDano();</span>
+
+  @Test
+  public void testEfeitoTerrenoEstacionamentoUcsal() {
+<span class="fc" id="L19">    Pokesal atacante = new Pokesal(SalDex.CHARSAL);</span>
+<span class="fc" id="L20">    Pokesal defensor = new Pokesal(SalDex.CHARSAL);</span>
+
+<span class="fc" id="L22">    int semBonus = calculadora.calcular(atacante, defensor, Terreno.CANTEIRO_CENTRAL, false);</span>
+<span class="fc" id="L23">    int comAsfalto = calculadora.calcular(atacante, defensor, Terreno.ASFALTO_QUENTE, false);</span>
+<span class="fc" id="L24">    int comPoca = calculadora.calcular(atacante, defensor, Terreno.POCA_CHUVA, false);</span>
+
+<span class="fc" id="L26">    assertAll(</span>
+<span class="fc" id="L27">        () -&gt; assertEquals(9, semBonus, &quot;Sem bônus: 52 - 43 = 9&quot;),</span>
+<span class="fc" id="L28">        () -&gt; assertEquals(10, comAsfalto, &quot;Asfalto Quente: 9 x 1,15 = 10,35 truncado&quot;),</span>
+<span class="fc" id="L29">        () -&gt; assertEquals(9, comPoca, &quot;Poça de Chuva não bonifica Fogo&quot;));</span>
+<span class="fc" id="L30">  }</span>
+
+  @Test
+  public void testCalculoDanoBoundaryValues() {
+<span class="fc" id="L34">    Pokesal alvo = new Pokesal(SalDex.BULBASAL);</span>
+<span class="fc" id="L35">    int hpMaximo = alvo.getHpMax();</span>
+
+<span class="fc" id="L37">    alvo.receberDano(hpMaximo + 1000);</span>
+<span class="fc" id="L38">    assertEquals(0, alvo.getHpAtual(), &quot;HP nunca fica negativo&quot;);</span>
+<span class="fc" id="L39">    assertTrue(alvo.estaDerrotado());</span>
+
+<span class="fc" id="L41">    alvo.curar(hpMaximo + 1000);</span>
+<span class="fc" id="L42">    assertEquals(hpMaximo, alvo.getHpAtual(), &quot;Cura não ultrapassa o HP máximo&quot;);</span>
+
+<span class="fc" id="L44">    Pokesal bulbasal = new Pokesal(SalDex.BULBASAL);</span>
+<span class="fc" id="L45">    Pokesal squirtsal = new Pokesal(SalDex.SQUIRTSAL);</span>
+<span class="fc" id="L46">    Pokesal charsal = new Pokesal(SalDex.CHARSAL);</span>
+<span class="fc" id="L47">    Terreno neutro = Terreno.POCA_CHUVA;</span>
+
+<span class="fc" id="L49">    assertAll(</span>
+<span class="fc" id="L50">        () -&gt; assertEquals(2,</span>
+<span class="fc" id="L51">            calculadora.calcular(bulbasal, squirtsal, neutro, false),</span>
+<span class="fc" id="L52">            &quot;ATK &lt; DEF: piso 1 x 2,0 (Planta vence Água)&quot;),</span>
+<span class="fc" id="L53">        () -&gt; assertEquals(1,</span>
+<span class="fc" id="L54">            calculadora.calcular(bulbasal, bulbasal, neutro, false),</span>
+<span class="fc" id="L55">            &quot;ATK = DEF: dano 0 sobe ao piso 1&quot;),</span>
+<span class="fc" id="L56">        () -&gt; assertEquals(6,</span>
+<span class="fc" id="L57">            calculadora.calcular(charsal, bulbasal, neutro, false),</span>
+<span class="fc" id="L58">            &quot;ATK = DEF + 3: 3 x 2,0&quot;),</span>
+<span class="fc" id="L59">        () -&gt; assertEquals(1,</span>
+<span class="fc" id="L60">            calculadora.calcular(charsal, squirtsal, neutro, false),</span>
+<span class="fc" id="L61">            &quot;Piso 1 x 0,5 = 0,5 trunca para 0 e volta ao piso 1&quot;));</span>
+<span class="fc" id="L62">  }</span>
+
+  @Test
+  public void testDanoCritico() {
+<span class="fc" id="L66">    Pokesal atacante = new Pokesal(SalDex.CHARSAL);</span>
+<span class="fc" id="L67">    Pokesal defensor = new Pokesal(SalDex.CHARSAL);</span>
+
+<span class="fc" id="L69">    int normal = calculadora.calcular(atacante, defensor, Terreno.CANTEIRO_CENTRAL, false);</span>
+<span class="fc" id="L70">    int critico = calculadora.calcular(atacante, defensor, Terreno.CANTEIRO_CENTRAL, true);</span>
+
+<span class="fc" id="L72">    assertAll(</span>
+<span class="fc" id="L73">        () -&gt; assertEquals(9, normal),</span>
+<span class="fc" id="L74">        () -&gt; assertEquals(13, critico, &quot;9 x 1,5 = 13,5 truncado&quot;));</span>
+<span class="fc" id="L75">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>

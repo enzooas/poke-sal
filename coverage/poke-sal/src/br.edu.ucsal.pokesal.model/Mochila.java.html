@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Mochila.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.model</a> &gt; <span class="el_source">Mochila.java</span></div><h1>Mochila.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.model;
+
+import br.edu.ucsal.pokesal.model.enums.Itens;
+import java.util.ArrayList;
+import java.util.List;
+
+/** Guarda os itens do treinador e controla o limite de uso por batalha. */
+public class Mochila {
+
+  public static final int LIMITE_MAXIMO = 2;
+  private List&lt;Itens&gt; itens;
+  private int qtdUsadaBatalha;
+
+  /** Cria a mochila com a lista de itens informada e zera o contador de usos. */
+<span class="fc" id="L15">  public Mochila(List&lt;Itens&gt; itens) {</span>
+<span class="fc" id="L16">    this.itens = new ArrayList&lt;&gt;(itens);</span>
+<span class="fc" id="L17">    this.qtdUsadaBatalha = 0;</span>
+<span class="fc" id="L18">  }</span>
+
+  public List&lt;Itens&gt; getItens() {
+<span class="fc" id="L21">    return itens;</span>
+  }
+
+  /** Indica se ainda resta uso de item na batalha atual e se há itens na mochila. */
+  public boolean podeUsarItem() {
+<span class="pc bpc" id="L26" title="1 of 4 branches missed.">    return qtdUsadaBatalha &lt; LIMITE_MAXIMO &amp;&amp; !itens.isEmpty();</span>
+  }
+
+  /** Remove o item da mochila e contabiliza mais um uso na batalha. */
+  public void registrarUso(Itens item) {
+<span class="fc bfc" id="L31" title="All 2 branches covered.">    if (!podeUsarItem()) {</span>
+<span class="fc" id="L32">      throw new IllegalStateException(</span>
+<span class="fc" id="L33">        &quot;Limite de &quot; + LIMITE_MAXIMO + &quot; itens por batalha atingido ou mochila vazia&quot;);</span>
+    }
+<span class="fc" id="L35">    itens.remove(item);</span>
+<span class="fc" id="L36">    qtdUsadaBatalha++;</span>
+<span class="fc" id="L37">  }</span>
+
+  /** Zera o contador de itens usados para o início de uma nova batalha. */
+  public void resetarUsoBatalha() {
+<span class="fc" id="L41">    this.qtdUsadaBatalha = 0;</span>
+<span class="fc" id="L42">  }</span>
+
+  public int getQtdUsadaBatalha() {
+<span class="nc" id="L45">    return qtdUsadaBatalha;</span>
+  }
+
+  /** Cria uma mochila nova com os itens-padrão de início de jogo. */
+  public static Mochila criarMochilaPadrao() {
+<span class="nc" id="L50">    return new Mochila(List.of(Itens.POTION, Itens.SUPERPOTION, Itens.ANTIDOTE));</span>
+  }
+
+  /** Guarda um novo item na mochila. */
+  public void adicionarItem(Itens item) {
+<span class="fc" id="L55">    itens.add(item);</span>
+<span class="fc" id="L56">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Pokesal.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.model</a> &gt; <span class="el_source">Pokesal.java</span></div><h1>Pokesal.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.model;
+
+import br.edu.ucsal.pokesal.model.enums.SalDex;
+import br.edu.ucsal.pokesal.model.enums.Status;
+import br.edu.ucsal.pokesal.model.enums.TipoElemental;
+
+/** PokéSal em batalha, com atributos vindos da SalDex e HP/status mutáveis. */
+public class Pokesal {
+
+  private final String nomeP;
+  private final TipoElemental tipoElemental;
+  private final int hpMax;
+  private int hpAtual;
+  private final int atk;
+  private final int def;
+  private final int spd;
+  private final Golpe golpe;
+  private Status status;
+  private int turnosComStatus;
+
+  /** Cria o PokéSal a partir da SalDex, com HP cheio e status normal. */
+<span class="fc" id="L22">  public Pokesal(SalDex saldex) {</span>
+<span class="fc" id="L23">    this.nomeP = saldex.getNome();</span>
+<span class="fc" id="L24">    this.tipoElemental = saldex.getTipoElemental();</span>
+<span class="fc" id="L25">    this.hpMax = saldex.getHpMax();</span>
+<span class="fc" id="L26">    this.hpAtual = this.hpMax;</span>
+<span class="fc" id="L27">    this.atk = saldex.getAtk();</span>
+<span class="fc" id="L28">    this.def = saldex.getDef();</span>
+<span class="fc" id="L29">    this.spd = saldex.getSpd();</span>
+<span class="fc" id="L30">    this.golpe = saldex.getGolpe();</span>
+<span class="fc" id="L31">    this.status = Status.NORMAL;</span>
+<span class="fc" id="L32">  }</span>
+
+  public TipoElemental getTipoElemental() {
+<span class="fc" id="L35">    return tipoElemental;</span>
+  }
+
+  public String getNomeP() {
+<span class="fc" id="L39">    return nomeP;</span>
+  }
+
+  public int getHpMax() {
+<span class="fc" id="L43">    return hpMax;</span>
+  }
+
+  public int getAtk() {
+<span class="fc" id="L47">    return atk;</span>
+  }
+
+  public int getHpAtual() {
+<span class="fc" id="L51">    return hpAtual;</span>
+  }
+
+  public void setHpAtual(int hpAtual) {
+<span class="nc" id="L55">    this.hpAtual = hpAtual;</span>
+<span class="nc" id="L56">  }</span>
+
+  public int getDef() {
+<span class="fc" id="L59">    return def;</span>
+  }
+
+  public int getSpd() {
+<span class="fc" id="L63">    return spd;</span>
+  }
+
+  public Golpe getGolpe() {
+<span class="fc" id="L67">    return golpe;</span>
+  }
+
+  public Status getStatus() {
+<span class="fc" id="L71">    return status;</span>
+  }
+
+  /** Status começa  com 0 turnos. */
+  public void setStatus(Status status) {
+<span class="fc" id="L76">    this.status = status;</span>
+<span class="fc" id="L77">    this.turnosComStatus = 0;</span>
+<span class="fc" id="L78">  }</span>
+
+  public int getTurnosComStatus() {
+<span class="fc" id="L81">    return turnosComStatus;</span>
+  }
+
+  /** Conta mais um turno sob o status atual. */
+  public void avancarTurnoDeStatus() {
+<span class="fc" id="L86">    turnosComStatus++;</span>
+<span class="fc" id="L87">  }</span>
+
+  /** Recupera HP sem ultrapassar o máximo e devolve quanto foi efetivamente curado. */
+  public int curar(int valorCura) {
+<span class="fc" id="L91">    int hpAntes = hpAtual;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">    if (hpAtual + valorCura &gt; hpMax) {</span>
+<span class="fc" id="L93">      hpAtual = hpMax;</span>
+<span class="fc" id="L94">    } else {</span>
+<span class="fc" id="L95">      hpAtual += valorCura;</span>
+    }
+<span class="fc" id="L97">    return hpAtual - hpAntes;</span>
+  }
+
+  /** Aplica dano sem deixar o HP negativo e devolve quanto foi efetivamente perdido. */
+  public int receberDano(int dano) {
+<span class="fc" id="L102">    int hpAntes = hpAtual;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">    if (hpAtual - dano &lt; 0) {</span>
+<span class="fc" id="L104">      hpAtual = 0;</span>
+<span class="fc" id="L105">    } else {</span>
+<span class="fc" id="L106">      hpAtual -= dano;</span>
+    }
+<span class="fc" id="L108">    return hpAntes - hpAtual;</span>
+  }
+
+  /** Indica se o PokéSal está sem HP. */
+  public boolean estaDerrotado() {
+<span class="fc bfc" id="L113" title="All 2 branches covered.">    return hpAtual == 0;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>

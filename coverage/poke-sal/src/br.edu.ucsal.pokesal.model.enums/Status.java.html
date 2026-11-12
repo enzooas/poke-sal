@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Status.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.model.enums</a> &gt; <span class="el_source">Status.java</span></div><h1>Status.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.model.enums;
+
+/** Condições de status que um PokéSal pode sofrer durante a batalha. */
+<span class="fc" id="L4">public enum Status {</span>
+<span class="fc" id="L5">  NORMAL(0.0, 0.0, 0.0, 0),</span>
+<span class="fc" id="L6">  QUEIMADO(0.0625, 0.0, 0.5, 3),</span>
+<span class="fc" id="L7">  ENVENENADO(0.0625, 0.0625, 0.0, 0),</span>
+<span class="fc" id="L8">  PARALISADO(0.0, 0.0, 0.5, 3);</span>
+
+  private final double danoPorTurno;
+  private final double incrementoDano;
+  private final double redutorAtributo;
+  private final int duracaoTurnos;
+
+<span class="fc" id="L15">  Status(double danoPorTurno, double incrementoDano, double redutorAtributo, int duracaoTurnos) {</span>
+<span class="fc" id="L16">    this.danoPorTurno = danoPorTurno;</span>
+<span class="fc" id="L17">    this.incrementoDano = incrementoDano;</span>
+<span class="fc" id="L18">    this.redutorAtributo = redutorAtributo;</span>
+<span class="fc" id="L19">    this.duracaoTurnos = duracaoTurnos;</span>
+<span class="fc" id="L20">  }</span>
+
+  public double getDanoPorTurno() {
+<span class="nc" id="L23">    return danoPorTurno;</span>
+  }
+
+  public double getRedutorAtributo() {
+<span class="nc" id="L27">    return redutorAtributo;</span>
+  }
+
+  public int getDuracaoTurnos() {
+<span class="fc" id="L31">    return duracaoTurnos;</span>
+  }
+
+  /** Percentual do HP máximo perdido no turno, dado quantos turnos já se passaram. */
+  public double danoNoTurno(int turnosPassados) {
+<span class="fc" id="L36">    return danoPorTurno + incrementoDano * turnosPassados;</span>
+  }
+
+  /** Indica se o status some sozinho após certo número de turnos. */
+  public boolean expira() {
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">    return duracaoTurnos &gt; 0;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>

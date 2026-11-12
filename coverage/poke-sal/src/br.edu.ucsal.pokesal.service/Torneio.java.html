@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Torneio.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.service</a> &gt; <span class="el_source">Torneio.java</span></div><h1>Torneio.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.service;
+
+import br.edu.ucsal.pokesal.model.ResultadoBatalha;
+import br.edu.ucsal.pokesal.model.ResultadoTorneio;
+import br.edu.ucsal.pokesal.model.Treinador;
+import java.util.ArrayList;
+import java.util.List;
+
+/** Torneio eliminatório entre 4 ou 8 treinadores. */
+public class Torneio {
+
+  private static final int MINIMO_PARTICIPANTES = 4;
+  private static final int MAXIMO_PARTICIPANTES = 8;
+
+  private final List&lt;Treinador&gt; participantes;
+  private final FabricaDeBatalha fabrica;
+  private final AvisoTorneio aviso;
+
+  /** Cria o torneio com os participantes na ordem do chaveamento. */
+<span class="fc" id="L20">  public Torneio(List&lt;Treinador&gt; participantes, FabricaDeBatalha fabrica, AvisoTorneio aviso) {</span>
+<span class="fc" id="L21">    int total = participantes.size();</span>
+<span class="pc bpc" id="L22" title="1 of 4 branches missed.">    if (total != MINIMO_PARTICIPANTES &amp;&amp; total != MAXIMO_PARTICIPANTES) {</span>
+<span class="fc" id="L23">      throw new IllegalArgumentException(</span>
+<span class="fc" id="L24">          &quot;O torneio exige 4 ou 8 treinadores, mas recebeu &quot; + total);</span>
+    }
+<span class="fc" id="L26">    this.participantes = new ArrayList&lt;&gt;(participantes);</span>
+<span class="fc" id="L27">    this.fabrica = fabrica;</span>
+<span class="fc" id="L28">    this.aviso = aviso;</span>
+<span class="fc" id="L29">  }</span>
+
+  /** Disputa todas as fases e devolve o campeão com as batalhas realizadas. */
+  public ResultadoTorneio disputar() {
+<span class="fc" id="L33">    List&lt;ResultadoBatalha&gt; batalhas = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L34">    List&lt;Treinador&gt; fase = new ArrayList&lt;&gt;(participantes);</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">    while (fase.size() &gt; 1) {</span>
+<span class="fc" id="L36">      fase = disputarFase(fase, batalhas);</span>
+    }
+<span class="fc" id="L38">    return new ResultadoTorneio(fase.get(0), batalhas);</span>
+  }
+
+  private List&lt;Treinador&gt; disputarFase(List&lt;Treinador&gt; fase, List&lt;ResultadoBatalha&gt; batalhas) {
+<span class="fc" id="L42">    aviso.inicioFase(fase.size());</span>
+<span class="fc" id="L43">    List&lt;Treinador&gt; vencedores = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">    for (int i = 0; i &lt; fase.size(); i += 2) {</span>
+<span class="fc" id="L45">      Treinador a = fase.get(i);</span>
+<span class="fc" id="L46">      Treinador b = fase.get(i + 1);</span>
+<span class="fc" id="L47">      ResultadoBatalha resultado = fabrica.disputar(a, b);</span>
+<span class="fc" id="L48">      batalhas.add(resultado);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">      vencedores.add(resultado.venceu(a.getNome()) ? a : b);</span>
+    }
+<span class="fc" id="L51">    return vencedores;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>

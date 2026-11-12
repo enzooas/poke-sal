@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>TipoElemental.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.model.enums</a> &gt; <span class="el_source">TipoElemental.java</span></div><h1>TipoElemental.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.model.enums;
+
+/** Tipos elementais que definem as vantagens e desvantagens de um PokéSal. */
+public enum TipoElemental {
+<span class="fc" id="L5">  AGUA,</span>
+<span class="fc" id="L6">  FOGO,</span>
+<span class="fc" id="L7">  PLANTA;</span>
+
+  public static final double SUPER_EFETIVO = 2.0;
+  public static final double POUCO_EFETIVO = 0.5;
+<span class="fc" id="L11">  public static final double NEUTRO = 1.0;</span>
+
+  /** Devolve o multiplicador de dano deste tipo (atacante) contra o tipo do defensor. */
+  public double multiplicadorContra(TipoElemental defensor) {
+<span class="fc bfc" id="L15" title="All 2 branches covered.">    if (temVantagemSobre(defensor)) {</span>
+<span class="fc" id="L16">      return SUPER_EFETIVO;</span>
+    }
+<span class="fc bfc" id="L18" title="All 2 branches covered.">    if (defensor.temVantagemSobre(this)) {</span>
+<span class="fc" id="L19">      return POUCO_EFETIVO;</span>
+    }
+<span class="fc" id="L21">    return NEUTRO;</span>
+  }
+
+  private boolean temVantagemSobre(TipoElemental outro) {
+<span class="fc bfc" id="L25" title="All 4 branches covered.">    return this == FOGO &amp;&amp; outro == PLANTA</span>
+<span class="fc bfc" id="L26" title="All 4 branches covered.">        || this == AGUA &amp;&amp; outro == FOGO</span>
+<span class="fc bfc" id="L27" title="All 4 branches covered.">        || this == PLANTA &amp;&amp; outro == AGUA;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>

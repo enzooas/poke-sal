@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Iniciativa.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.service</a> &gt; <span class="el_source">Iniciativa.java</span></div><h1>Iniciativa.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.service;
+
+import br.edu.ucsal.pokesal.model.Pokesal;
+import br.edu.ucsal.pokesal.model.enums.Status;
+
+/** Decide a ordem de ataque do turno pela velocidade efetiva dos PokéSal. */
+public class Iniciativa {
+
+  private final GeradorAleatorio gerador;
+
+  /** Cria a iniciativa com a fonte de sorteio usada nos empates. */
+<span class="fc" id="L12">  public Iniciativa(GeradorAleatorio gerador) {</span>
+<span class="fc" id="L13">    this.gerador = gerador;</span>
+<span class="fc" id="L14">  }</span>
+
+  /** Velocidade considerando a redução causada pelo status. */
+  public int velocidadeEfetiva(Pokesal pokesal) {
+<span class="fc" id="L18">    double spd = pokesal.getSpd();</span>
+<span class="pc bpc" id="L19" title="1 of 2 branches missed.">    if (pokesal.getStatus() == Status.PARALISADO) {</span>
+<span class="nc" id="L20">      spd *= 1.0 - pokesal.getStatus().getRedutorAtributo();</span>
+    }
+<span class="fc" id="L22">    return (int) spd;</span>
+  }
+
+  /** Indica se o primeiro PokéSal ataca antes; empates são decididos por sorteio. */
+  public boolean primeiroAtacaAntes(Pokesal primeiro, Pokesal segundo) {
+<span class="fc" id="L27">    int spdPrimeiro = velocidadeEfetiva(primeiro);</span>
+<span class="fc" id="L28">    int spdSegundo = velocidadeEfetiva(segundo);</span>
+
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">    if (spdPrimeiro == spdSegundo) {</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">      return gerador.proximoInteiro(2) == 0;</span>
+    }
+<span class="fc bfc" id="L33" title="All 2 branches covered.">    return spdPrimeiro &gt; spdSegundo;</span>
+  }
+
+  /** Verifica se os dois PokéSal têm a mesma SPD efetiva, e a ordem sai de sorteio. */
+  public boolean haEmpate(Pokesal primeiro, Pokesal segundo) {
+<span class="fc bfc" id="L38" title="All 2 branches covered.">    return velocidadeEfetiva(primeiro) == velocidadeEfetiva(segundo);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>

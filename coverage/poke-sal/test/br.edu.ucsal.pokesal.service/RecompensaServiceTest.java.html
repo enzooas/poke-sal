@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>RecompensaServiceTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.service</a> &gt; <span class="el_source">RecompensaServiceTest.java</span></div><h1>RecompensaServiceTest.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.service;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import br.edu.ucsal.pokesal.model.Mochila;
+import br.edu.ucsal.pokesal.model.Treinador;
+import br.edu.ucsal.pokesal.model.enums.Itens;
+import br.edu.ucsal.pokesal.model.enums.SalDex;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+/** Testes da recompensa por vitória. */
+<span class="fc" id="L17">public class RecompensaServiceTest {</span>
+
+  private static GeradorAleatorio sorteioFixo(int valor) {
+<span class="fc" id="L20">    return new GeradorAleatorio() {</span>
+      @Override
+      public int proximoInteiro(int limite) {
+<span class="fc" id="L23">        return valor;</span>
+      }
+
+      @Override
+      public double proximoDecimal() {
+<span class="nc" id="L28">        return 0.0;</span>
+      }
+    };
+  }
+
+  @Test
+  public void testSistemaRecompensa() {
+<span class="fc" id="L35">    Treinador treinador = new Treinador(&quot;J&quot;, SalDex.BULBASAL, new Mochila(new ArrayList&lt;&gt;()));</span>
+<span class="fc" id="L36">    RecompensaService service = new RecompensaService(sorteioFixo(1));</span>
+
+<span class="fc" id="L38">    Itens premio = service.concederRecompensa(treinador);</span>
+
+<span class="fc" id="L40">    assertAll(</span>
+<span class="fc" id="L41">        () -&gt; assertEquals(Itens.SUPERPOTION, premio),</span>
+<span class="fc" id="L42">        () -&gt; assertTrue(treinador.getMochila().getItens().contains(Itens.SUPERPOTION)));</span>
+<span class="fc" id="L43">  }</span>
+  
+  @Test
+  public void testRecompensaComQuantidadeSorteiaVariasVezes() {
+<span class="fc" id="L47">    GeradorAleatorio geradorMock = org.mockito.Mockito.mock(GeradorAleatorio.class);</span>
+<span class="fc" id="L48">    org.mockito.Mockito.when(geradorMock.proximoInteiro(3)).thenReturn(0, 1, 2);</span>
+<span class="fc" id="L49">    Treinador treinador = new Treinador(&quot;J&quot;, SalDex.BULBASAL, new Mochila(new ArrayList&lt;&gt;()));</span>
+
+<span class="fc" id="L51">    List&lt;Itens&gt; itens = new RecompensaService(geradorMock).concederRecompensa(treinador, 3);</span>
+
+<span class="fc" id="L53">    assertEquals(List.of(Itens.POTION, Itens.SUPERPOTION, Itens.ANTIDOTE), itens);</span>
+<span class="fc" id="L54">    assertEquals(3, treinador.getMochila().getItens().size());</span>
+<span class="fc" id="L55">    org.mockito.Mockito.verify(geradorMock, org.mockito.Mockito.times(3)).proximoInteiro(3);</span>
+<span class="fc" id="L56">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>

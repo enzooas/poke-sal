@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>FabricaDeBatalhaTorneio.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.service</a> &gt; <span class="el_source">FabricaDeBatalhaTorneio.java</span></div><h1>FabricaDeBatalhaTorneio.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.service;
+
+import br.edu.ucsal.pokesal.model.ResultadoBatalha;
+import br.edu.ucsal.pokesal.model.Treinador;
+import br.edu.ucsal.pokesal.repository.RepositorioResultados;
+
+/**
+ * Disputa as batalhas do torneio: o jogador usa a escolha manual e as demais batalhas
+ * são automáticas e silenciosas. */
+public class FabricaDeBatalhaTorneio implements FabricaDeBatalha {
+
+  private final Treinador jogador;
+  private final EscolhaDeAcao escolhaJogador;
+  private final GeradorAleatorio gerador;
+  private final RegistroBatalha registroJogador;
+  private final RegistroBatalha registroSilencioso;
+  private final RepositorioResultados repositorio;
+  private final ServicoTerreno terreno;
+
+  /** Cria a fábrica com os colaboradores usados em cada batalha. */
+<span class="fc" id="L21">  public FabricaDeBatalhaTorneio(Treinador jogador, EscolhaDeAcao escolhaJogador,</span>
+        GeradorAleatorio gerador, RegistroBatalha registroJogador,
+        RegistroBatalha registroSilencioso, RepositorioResultados repositorio,
+        ServicoTerreno terreno) {
+<span class="fc" id="L25">    this.jogador = jogador;</span>
+<span class="fc" id="L26">    this.escolhaJogador = escolhaJogador;</span>
+<span class="fc" id="L27">    this.gerador = gerador;</span>
+<span class="fc" id="L28">    this.registroJogador = registroJogador;</span>
+<span class="fc" id="L29">    this.registroSilencioso = registroSilencioso;</span>
+<span class="fc" id="L30">    this.repositorio = repositorio;</span>
+<span class="fc" id="L31">    this.terreno = terreno;</span>
+<span class="fc" id="L32">  }</span>
+
+  @Override
+  public ResultadoBatalha disputar(Treinador primeiro, Treinador segundo) {
+<span class="fc bfc" id="L36" title="All 4 branches covered.">    boolean envolveJogador = primeiro == jogador || segundo == jogador;</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">    RegistroBatalha registro = envolveJogador ? registroJogador : registroSilencioso;</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">    EscolhaDeAcao escolhaPrimeiro = primeiro == jogador ? escolhaJogador : new CpuEscolha();</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">    EscolhaDeAcao escolhaSegundo = segundo == jogador ? escolhaJogador : new CpuEscolha();</span>
+
+<span class="fc" id="L41">    BatalhaService batalha = new BatalhaService(primeiro, segundo, gerador, new CalculadoraDano(),</span>
+<span class="fc" id="L42">        new Iniciativa(gerador), escolhaPrimeiro, escolhaSegundo, registro, repositorio, terreno);</span>
+<span class="fc" id="L43">    return batalha.iniciarBatalha();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>

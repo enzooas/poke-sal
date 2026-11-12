@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>ServicoConquistas.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.service</a> &gt; <span class="el_source">ServicoConquistas.java</span></div><h1>ServicoConquistas.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.service;
+
+import br.edu.ucsal.pokesal.model.Historico;
+import br.edu.ucsal.pokesal.model.enums.Conquista;
+import java.util.HashSet;
+import java.util.Set;
+
+/** Atualiza o histórico do modo normal e concede conquistas por sequência de vitórias. */
+public class ServicoConquistas {
+
+  private final NotificadorConquista notificador;
+<span class="fc" id="L12">  private final Set&lt;Conquista&gt; conquistasObtidas = new HashSet&lt;&gt;();</span>
+
+  /** Cria o serviço com o notificador que será avisado quando uma meta for atingida. */
+<span class="fc" id="L15">  public ServicoConquistas(NotificadorConquista notificador) {</span>
+<span class="fc" id="L16">    this.notificador = notificador;</span>
+<span class="fc" id="L17">  }</span>
+
+  /**
+   * Registra uma vitória normal e concede a conquista se a sequência atingiu uma meta
+   * cujo título ainda não foi obtido nesta execução.
+   */
+  public void registrarVitoria(Historico historico) {
+<span class="fc" id="L24">    historico.registrarVitoriaNormal();</span>
+<span class="fc" id="L25">    int sequencia = historico.getSequenciaAtual();</span>
+<span class="fc" id="L26">    Conquista conquista = Conquista.daSequencia(sequencia);</span>
+<span class="fc bfc" id="L27" title="All 4 branches covered.">    if (conquista != null &amp;&amp; !conquistasObtidas.contains(conquista)) {</span>
+<span class="fc" id="L28">      conquistasObtidas.add(conquista);</span>
+<span class="fc" id="L29">      notificador.conquistaObtida(conquista, sequencia);</span>
+    }
+<span class="fc" id="L31">  }</span>
+
+  /** Registra uma derrota normal, que zera a sequência atual e preserva o recorde. */
+  public void registrarDerrota(Historico historico) {
+<span class="fc" id="L35">    historico.registrarDerrotaNormal();</span>
+<span class="fc" id="L36">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>

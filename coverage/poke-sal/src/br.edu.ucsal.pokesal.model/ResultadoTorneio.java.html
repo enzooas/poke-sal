@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>ResultadoTorneio.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.model</a> &gt; <span class="el_source">ResultadoTorneio.java</span></div><h1>ResultadoTorneio.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.model;
+
+import java.util.List;
+
+/** Resultado de um torneio: o campeão e todas as batalhas disputadas. */
+public class ResultadoTorneio {
+
+  private final Treinador campeao;
+  private final List&lt;ResultadoBatalha&gt; batalhas;
+
+  /** Cria o resultado com o campeão e as batalhas, na ordem em que ocorreram. */
+<span class="fc" id="L12">  public ResultadoTorneio(Treinador campeao, List&lt;ResultadoBatalha&gt; batalhas) {</span>
+<span class="fc" id="L13">    this.campeao = campeao;</span>
+<span class="fc" id="L14">    this.batalhas = List.copyOf(batalhas);</span>
+<span class="fc" id="L15">  }</span>
+
+  public Treinador getCampeao() {
+<span class="fc" id="L18">    return campeao;</span>
+  }
+
+  public List&lt;ResultadoBatalha&gt; getBatalhas() {
+<span class="fc" id="L22">    return batalhas;</span>
+  }
+
+  /** Conta quantas batalhas o treinador informado venceu no torneio. */
+  public int vitoriasDe(String nomeTreinador) {
+<span class="fc" id="L27">    int vitorias = 0;</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">    for (ResultadoBatalha batalha : batalhas) {</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">      if (batalha.venceu(nomeTreinador)) {</span>
+<span class="fc" id="L30">        vitorias++;</span>
+      }
+    }
+<span class="fc" id="L33">    return vitorias;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>

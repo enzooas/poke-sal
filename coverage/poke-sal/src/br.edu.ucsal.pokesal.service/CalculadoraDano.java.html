@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>CalculadoraDano.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.service</a> &gt; <span class="el_source">CalculadoraDano.java</span></div><h1>CalculadoraDano.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.service;
+
+import br.edu.ucsal.pokesal.model.Pokesal;
+import br.edu.ucsal.pokesal.model.enums.Status;
+import br.edu.ucsal.pokesal.model.enums.Terreno;
+
+/** Calcula o dano de um ataque combinando status, tipo, terreno e crítico. */
+<span class="fc" id="L8">public class CalculadoraDano {</span>
+
+  private static final double MULTIPLICADOR_CRITICO = 1.5;
+  private static final int DANO_MINIMO = 1;
+
+  /** Calcula o dano final de um ataque, sempre de pelo menos o dano mínimo. */
+  public int calcular(Pokesal atacante, Pokesal defensor, Terreno terreno, boolean critico) {
+<span class="fc" id="L15">    double atkEfetivo = atacante.getAtk();</span>
+<span class="pc bpc" id="L16" title="1 of 2 branches missed.">    if (atacante.getStatus() == Status.QUEIMADO) {</span>
+<span class="nc" id="L17">      atkEfetivo *= 1.0 - atacante.getStatus().getRedutorAtributo();</span>
+    }
+
+<span class="fc" id="L20">    double dano = Math.max(atkEfetivo - defensor.getDef(), DANO_MINIMO);</span>
+<span class="fc" id="L21">    dano *= atacante.getTipoElemental().multiplicadorContra(defensor.getTipoElemental());</span>
+<span class="fc" id="L22">    dano *= 1.0 + terreno.bonusDeDano(atacante.getTipoElemental());</span>
+
+<span class="fc bfc" id="L24" title="All 2 branches covered.">    if (critico) {</span>
+<span class="fc" id="L25">      dano *= MULTIPLICADOR_CRITICO;</span>
+    }
+
+<span class="fc" id="L28">    int danoFinal = (int) dano;</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">    if (danoFinal &lt; DANO_MINIMO) {</span>
+<span class="fc" id="L30">      danoFinal = DANO_MINIMO;</span>
+    }
+<span class="fc" id="L32">    return danoFinal;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>

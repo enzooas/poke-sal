@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>FabricaDeBatalhaTorneioTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.service</a> &gt; <span class="el_source">FabricaDeBatalhaTorneioTest.java</span></div><h1>FabricaDeBatalhaTorneioTest.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.service;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import br.edu.ucsal.pokesal.model.Acao;
+import br.edu.ucsal.pokesal.model.Mochila;
+import br.edu.ucsal.pokesal.model.Pokesal;
+import br.edu.ucsal.pokesal.model.ResultadoBatalha;
+import br.edu.ucsal.pokesal.model.Treinador;
+import br.edu.ucsal.pokesal.model.enums.SalDex;
+import br.edu.ucsal.pokesal.model.enums.Terreno;
+import br.edu.ucsal.pokesal.repository.RepositorioResultados;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+/**
+ * Testes da fábrica de batalhas do torneio: quem usa a escolha manual e qual registro é usado.
+ *
+ * &lt;p&gt;A fábrica é montada à mão (e não com {@code @InjectMocks}) porque o construtor recebe um
+ * {@code Treinador} real e vários colaboradores do mesmo tipo de interface.
+ */
+@ExtendWith(MockitoExtension.class)
+<span class="fc" id="L34">public class FabricaDeBatalhaTorneioTest {</span>
+
+  @Mock
+  private GeradorAleatorio gerador;
+  @Mock
+  private EscolhaDeAcao escolhaJogador;
+  @Mock
+  private RegistroBatalha registroJogador;
+  @Mock
+  private RegistroBatalha registroSilencioso;
+  @Mock
+  private RepositorioResultados repositorio;
+  @Mock
+  private ServicoTerreno servicoTerreno;
+
+  private Treinador jogador;
+  private Treinador cpu;
+  private FabricaDeBatalhaTorneio fabrica;
+
+  @BeforeEach
+  public void montar() {
+<span class="fc" id="L55">    jogador = new Treinador(&quot;Jogador&quot;, SalDex.CHARSAL, new Mochila(new ArrayList&lt;&gt;()));</span>
+<span class="fc" id="L56">    cpu = new Treinador(&quot;CPU 1&quot;, SalDex.BULBASAL, new Mochila(new ArrayList&lt;&gt;()));</span>
+<span class="fc" id="L57">    fabrica = new FabricaDeBatalhaTorneio(jogador, escolhaJogador, gerador, registroJogador,</span>
+<span class="fc" id="L58">        registroSilencioso, repositorio, servicoTerreno);</span>
+<span class="fc" id="L59">  }</span>
+
+  /** Terreno único (Canteiro), sempre acerta, sem crítico, contra-ataque nem status. */
+  private void gerarSorteiosNeutros() {
+<span class="fc" id="L63">    when(servicoTerreno.terrenosDisponiveis()).thenReturn(List.of(Terreno.CANTEIRO_CENTRAL));</span>
+<span class="fc" id="L64">    when(gerador.proximoInteiro(anyInt())).thenReturn(0);</span>
+<span class="fc" id="L65">    when(gerador.proximoDecimal()).thenReturn(0.5);</span>
+<span class="fc" id="L66">  }</span>
+
+  @Test
+  public void testBatalhaDoJogadorUsaEscolhaManualeRegistroDoJogador() {
+<span class="fc" id="L70">    gerarSorteiosNeutros();</span>
+<span class="fc" id="L71">    when(escolhaJogador.escolher(any(Treinador.class), any(Pokesal.class)))</span>
+<span class="fc" id="L72">        .thenReturn(Acao.atacar());</span>
+
+<span class="fc" id="L74">    ResultadoBatalha resultado = fabrica.disputar(jogador, cpu);</span>
+
+<span class="fc" id="L76">    assertTrue(resultado.venceu(&quot;Jogador&quot;));</span>
+<span class="fc" id="L77">    verify(escolhaJogador, org.mockito.Mockito.atLeastOnce())</span>
+<span class="fc" id="L78">        .escolher(any(Treinador.class), any(Pokesal.class));</span>
+<span class="fc" id="L79">    verify(registroJogador, org.mockito.Mockito.atLeastOnce()).inicioRodada(anyInt());</span>
+<span class="fc" id="L80">    verify(registroSilencioso, never()).inicioRodada(anyInt());</span>
+<span class="fc" id="L81">    verify(repositorio).salvar(resultado);</span>
+<span class="fc" id="L82">  }</span>
+
+  @Test
+  public void testBatalhaEntreCpusUsaRegistroSilencioso() {
+<span class="fc" id="L86">    gerarSorteiosNeutros();</span>
+<span class="fc" id="L87">    Treinador cpuA = new Treinador(&quot;CPU A&quot;, SalDex.CHARSAL, new Mochila(new ArrayList&lt;&gt;()));</span>
+
+<span class="fc" id="L89">    ResultadoBatalha resultado = fabrica.disputar(cpuA, cpu);</span>
+
+<span class="fc" id="L91">    assertEquals(&quot;CPU A&quot;, resultado.getVencedor());</span>
+<span class="fc" id="L92">    verify(registroSilencioso, org.mockito.Mockito.atLeastOnce()).inicioRodada(anyInt());</span>
+<span class="fc" id="L93">    verify(registroJogador, never()).inicioRodada(anyInt());</span>
+<span class="fc" id="L94">    verify(escolhaJogador, never()).escolher(any(Treinador.class), any(Pokesal.class));</span>
+<span class="fc" id="L95">    verify(repositorio).salvar(resultado);</span>
+<span class="fc" id="L96">  }</span>
+
+  @Test
+  public void testJogadorComoSegundoParticipanteTambemUsaEscolhaManual() {
+<span class="fc" id="L100">    gerarSorteiosNeutros();</span>
+<span class="fc" id="L101">    when(escolhaJogador.escolher(any(Treinador.class), any(Pokesal.class)))</span>
+<span class="fc" id="L102">        .thenReturn(Acao.atacar());</span>
+
+<span class="fc" id="L104">    ResultadoBatalha resultado = fabrica.disputar(cpu, jogador);</span>
+
+<span class="fc" id="L106">    assertTrue(resultado.venceu(&quot;Jogador&quot;));</span>
+<span class="fc" id="L107">    verify(registroJogador, org.mockito.Mockito.atLeastOnce()).inicioRodada(anyInt());</span>
+<span class="fc" id="L108">    verify(registroSilencioso, never()).inicioRodada(anyInt());</span>
+<span class="fc" id="L109">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Itens.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">test (11 de nov. de 2026 20:44:18)</a> &gt; <a href="../../index.html" class="el_group">poke-sal</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">br.edu.ucsal.pokesal.model.enums</a> &gt; <span class="el_source">Itens.java</span></div><h1>Itens.java</h1><pre class="source lang-java linenums">package br.edu.ucsal.pokesal.model.enums;
+
+import br.edu.ucsal.pokesal.model.Pokesal;
+
+/** Itens de batalha disponíveis na mochila do treinador. */
+<span class="fc" id="L6">public enum Itens {</span>
+<span class="fc" id="L7">  POTION(&quot;Potion&quot;, 20),</span>
+<span class="fc" id="L8">  SUPERPOTION(&quot;SuperPotion&quot;, 50),</span>
+<span class="fc" id="L9">  ANTIDOTE(&quot;Antidote&quot;, 0);</span>
+
+  private final String nome;
+  private final int valorCura;
+
+<span class="fc" id="L14">  Itens(String nome, int valorCura) {</span>
+<span class="fc" id="L15">    this.nome = nome;</span>
+<span class="fc" id="L16">    this.valorCura = valorCura;</span>
+<span class="fc" id="L17">  }</span>
+
+  public String getNome() {
+<span class="fc" id="L20">    return nome;</span>
+  }
+
+  public int getValorCura() {
+<span class="fc" id="L24">    return valorCura;</span>
+  }
+
+  /** Indica se o item faz sentido para a condição atual do PokéSal. */
+  public boolean podeUsarEm(Pokesal pokesal) {
+<span class="fc bfc" id="L29" title="All 2 branches covered.">    if (this == ANTIDOTE) {</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">      return pokesal.getStatus() == Status.ENVENENADO;</span>
+    }
+<span class="fc bfc" id="L32" title="All 2 branches covered.">    return pokesal.getHpAtual() &lt; pokesal.getHpMax();</span>
+  }
+
+  /** Aplica o efeito do item e devolve a descrição do que aconteceu. */
+  public String aplicarEm(Pokesal pokesal) {
+<span class="fc bfc" id="L37" title="All 2 branches covered.">    if (this == ANTIDOTE) {</span>
+<span class="fc" id="L38">      pokesal.setStatus(Status.NORMAL);</span>
+<span class="fc" id="L39">      return pokesal.getNomeP() + &quot; foi curado do envenenamento!&quot;;</span>
+    }
+<span class="fc" id="L41">    int curado = pokesal.curar(valorCura);</span>
+<span class="fc" id="L42">    return pokesal.getNomeP() + &quot; recuperou &quot; + curado + &quot; de HP! HP atual: &quot;</span>
+<span class="fc" id="L43">        + pokesal.getHpAtual() + &quot;/&quot; + pokesal.getHpMax();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span>test (11 de nov. de 2026 20:44:18)</div></body></html>
