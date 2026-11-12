@@ -17,7 +17,7 @@ public class HistoricoTest {
   }
 
   @Test
-  public void testDerrotaZeraSequenciaEPreservaRecorde() {
+  public void testDerrotaZeraSequenciaePreservaRecorde() {
     historico.registrarVitoriaNormal();
     historico.registrarVitoriaNormal();
     historico.registrarDerrotaNormal();

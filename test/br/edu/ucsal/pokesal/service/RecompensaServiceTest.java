@@ -10,7 +10,6 @@ import br.edu.ucsal.pokesal.model.enums.Itens;
 import br.edu.ucsal.pokesal.model.enums.SalDex;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 /** Testes da recompensa por vitória. */
@@ -41,7 +40,7 @@ public class RecompensaServiceTest {
         () -> assertEquals(Itens.SUPERPOTION, premio),
         () -> assertTrue(treinador.getMochila().getItens().contains(Itens.SUPERPOTION)));
   }
-  
+
   @Test
   public void testRecompensaComQuantidadeSorteiaVariasVezes() {
     GeradorAleatorio geradorMock = org.mockito.Mockito.mock(GeradorAleatorio.class);

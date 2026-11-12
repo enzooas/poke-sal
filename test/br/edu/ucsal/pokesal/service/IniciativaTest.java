@@ -36,7 +36,7 @@ public class IniciativaTest {
         () -> assertTrue(iniciativa.primeiroAtacaAntes(rapido, lento)),
         () -> assertFalse(iniciativa.primeiroAtacaAntes(lento, rapido)));
   }
-  
+
   @Test
   public void testHaEmpateApenasComMesmaVelocidade() {
     Iniciativa iniciativa = new Iniciativa(sorteioFixo(0));

@@ -27,20 +27,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * Testes de precisão, crítico e contra-ataque na batalha.
- *
- * <p>O gerador, o registro, o serviço de terreno e o repositório são mocks. O {@code
- * BatalhaService} é montado à mão, e não com {@code @InjectMocks}, porque o construtor recebe dois
- * {@code Treinador} reais (o Mockito não sabe qual vai em cada posição) e uma {@code
- * CalculadoraDano} real, que é a regra que queremos exercitar junto.
- *
- * <p>Matchers x valores exatos: usamos valor exato quando o argumento é o que o teste prova (o
- * limite 100 do sorteio de precisão, o dano 4 do contra-ataque). Usamos {@code any()} e {@code
- * anyString()} quando o argumento não importa para a regra testada (nomes formatados para a tela,
- * HP restante). Quando um argumento usa matcher, todos precisam usar, por isso aparece {@code
- * eq(4)} misturado com {@code anyString()}.
- */
+/** Testes de precisão, crítico e contra-ataque na batalha. */
 @ExtendWith(MockitoExtension.class)
 public class BatalhaServiceCombateTest {
 
@@ -116,9 +103,9 @@ public class BatalhaServiceCombateTest {
     verify(servicoTerreno, atLeastOnce()).terrenosDisponiveis();
   }
 
-  /** Teste 1 do Contra-Ataque (ata): o defensor bloqueia e devolve 50% do dano. */
+  /** Teste 1 do Contra-Ataque: o defensor bloqueia e devolve 50% do dano. */
   @Test
-  public void testContraAtaqueBloqueiaGolpeEDevolveMetadeDoDano() {
+  public void testContraAtaqueBloqueiaGolpeeDevolveMetadeDoDano() {
     BatalhaService batalha = criarBatalha();
     when(gerador.proximoInteiro(LIMITE_PRECISAO)).thenReturn(0);
     when(gerador.proximoDecimal()).thenReturn(0.0);
@@ -139,7 +126,7 @@ public class BatalhaServiceCombateTest {
     verify(registro, never()).golpeErrou(any(), any());
   }
 
-  /** Teste 2 do Contra-Ataque (ata): o revide nunca fica abaixo de 1. */
+  /** Teste 2 do Contra-Ataque: o revide nunca fica abaixo de 1. */
   @Test
   public void testContraAtaqueTemDanoMinimoDeUm() {
     // CharSal (fogo, ATK 52) contra SquirtSal (água, DEF 65): dano 1, metade seria 0

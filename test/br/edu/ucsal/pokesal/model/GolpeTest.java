@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+/** Testes da validação de precisão do golpe (limites de 0 a 100). */
 public class GolpeTest {
 
   @Test

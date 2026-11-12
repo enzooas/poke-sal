@@ -24,12 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * Testes da fábrica de batalhas do torneio: quem usa a escolha manual e qual registro é usado.
- *
- * <p>A fábrica é montada à mão (e não com {@code @InjectMocks}) porque o construtor recebe um
- * {@code Treinador} real e vários colaboradores do mesmo tipo de interface.
- */
+/** Testes da fábrica de batalhas do torneio: quem usa a escolha manual e qual registro é usado. */
 @ExtendWith(MockitoExtension.class)
 public class FabricaDeBatalhaTorneioTest {
 
@@ -50,6 +45,7 @@ public class FabricaDeBatalhaTorneioTest {
   private Treinador cpu;
   private FabricaDeBatalhaTorneio fabrica;
 
+  /** Cria o jogador, a CPU e a fábrica antes de cada teste. */
   @BeforeEach
   public void montar() {
     jogador = new Treinador("Jogador", SalDex.CHARSAL, new Mochila(new ArrayList<>()));

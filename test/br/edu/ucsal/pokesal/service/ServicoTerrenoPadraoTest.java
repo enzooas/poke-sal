@@ -18,10 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * Testes dos terrenos liberados pelo horário. O {@code Clock} é mockado e injetado no serviço pelo
- * construtor com {@code @InjectMocks}.
- */
+/** Testes dos terrenos liberados pelo horário.  */
 @ExtendWith(MockitoExtension.class)
 public class ServicoTerrenoPadraoTest {
 
@@ -36,7 +33,7 @@ public class ServicoTerrenoPadraoTest {
   }
 
   @Test
-  public void testAsfaltoQuenteApenasDuranteODia() {
+  public void testAsfaltoQuenteApenasDuranteoDia() {
     when(relogio.getZone()).thenReturn(ZoneOffset.UTC);
     // retornos em sequência: meio-dia na primeira consulta, 22h na segunda
     when(relogio.instant()).thenReturn(horario(12, 0), horario(22, 0));

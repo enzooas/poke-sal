@@ -33,13 +33,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * Testes da BatalhaService isolada de todos os colaboradores.
- *
- * <p>Matchers (any, anyInt, anyString) são usados quando o valor do argumento não é o objeto do
- * teste (por exemplo, qual Pokésal é passado à calculadora). Valores exatos (eq implícito) são
- * usados quando o argumento É o que se quer provar (nomes e HP nos eventos, dados do resultado).
- */
+/** Testes da BatalhaService isolada de todos os colaboradores.  */
 @ExtendWith(MockitoExtension.class)
 public class BatalhaServiceTest {
 
