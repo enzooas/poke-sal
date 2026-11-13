@@ -1,0 +1,17 @@
+Prompts usados na Fase 03 do Pokésal
+
+- Revise a ortografia deste documento, não altere nomes de classes, métodos,
+siglas trechos em código, mostre tbm inconsistencias de termos, ex: "Pokésal" x "PokéSal"
+
+- Liste os erros ortográficos e gramaticais do texto abaixo, com o trecho original e a
+correção sugerida
+
+- Explique por que este erro acontece, o que o compilador está reclamando, e como evitá-lo
+
+- Fiz merge de duas branches e o projeto não tá compilando mais, vou mandar os erros e os
+arquivos que tiveram conflito, identifique o que deu conflito e o que preciso unificar
+
+- Esta é a lista da aba de problems do Eclipse, diga quais são erros reais de código e
+quais são de configuração, tipo Build Path, sem dar a correção de logica
+
+- Transforme esse texto em markdown sem alterar nada, e faça com tabelas
