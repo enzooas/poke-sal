@@ -4,7 +4,7 @@
 
 * **Projeto:** PokéSal
 * **Equipe:** Fortune Tiger
-* **Integrantes:** Enzo Amaral, João Gabriel e Pedro Henrique
+* **Integrantes:** Enzo Amaral, João Gabriel e Paulo Henrique
 
 
 ## Divisão das atividades
