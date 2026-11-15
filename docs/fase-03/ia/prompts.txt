@@ -1,0 +1,17 @@
+Prompts utilizados na Fase 03 do PokéSal
+
+- Revise apenas a ortografia e a acentuação deste texto da documentação do projeto. Não altere nomes de classes, métodos, siglas ou trechos de código,
+e aponte inconsistências de grafia, por ex: "Pokésal" vs "PokéSal".
+
+- Liste os erros ortográficos e gramaticais encontrados no trecho de documentação abaixo, indicando o texto original e a correção sugerida,
+sem alterar a estrutura nem o conteúdo.
+
+- Revise a ortografia, concordância e pontuação da descrição dos requisitos abaixo, mantendo integralmente o conteúdo técnico original.
+
+- O compilador apontou o erro sintático abaixo. Explique o significado dessa mensagem de erro de sintaxe e qual símbolo ou estrutura gramatical do Java está faltando.
+
+- Fiz um merge no Git e o compilador acusou erro de sintaxe na compilação. Indique apenas em quais linhas há marcadores de conflito sintático
+(<<<<<<<, =======, >>>>>>>) que estão impedindo a compilação, sem alterar nem sugerir lógica de código.
+
+- Esta é a lista de mensagens Problems do Eclipse. Classifique apenas quais mensagens são erros sintáticos do compilador Java
+e quais são avisos de configuração de ambiente/Build Path, sem fornecer código ou correção lógica.
